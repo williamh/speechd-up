@@ -1,3 +1,27 @@
+
+/*
+ * speechd-up.c - Simple interface between SpeakUp and Speech Dispatcher
+ *
+ * Copyright (C) 2004 Brailcom, o.p.s.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this package; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ * $Id: speechd-up.c,v 1.2 2004-01-23 00:20:23 hanke Exp $
+ */
+
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -19,7 +43,6 @@
 #define DTLK_CMD 1
 
 int fd, conn;
-
 
 
 FILE *logfile;
@@ -263,6 +286,12 @@ main (int argc, char *argv[])
   options_set_default();
   options_parse(argc, argv);
 
+  logfile = fopen(LOG_FILE_NAME, "w");
+  if (logfile == NULL){
+    perror("ERROR: Can't open logfile in /tmp!\n");
+    exit(1);
+  }
+
   /* Fork, set uid, chdir, etc. */
   if (SPD_SPK_MODE == MODE_DAEMON){
     daemon(0,0);	   
@@ -274,12 +303,6 @@ main (int argc, char *argv[])
   /* Register signals */
   (void) signal(SIGINT, spd_spk_terminate);	
   (void) signal(SIGHUP, spd_spk_reset);
-
-  logfile = fopen(LOG_FILE_NAME, "w");
-  if (logfile == NULL){
-    perror("ERROR: Can't open logfile in /tmp!\n");
-    exit(1);
-  }
 
   DBG(1,"Speechd-speakup starts!");
 
