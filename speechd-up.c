@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.5 2004-04-15 17:18:25 kirk Exp $
+ * $Id: speechd-up.c,v 1.6 2004-11-01 18:47:34 kirk Exp $
  */
 
 #include <stdio.h>
@@ -194,7 +194,7 @@ process_command(char command, unsigned int param, int pm)
 	case 's': /* speech rate */
 		if (pm) currate += pm;
 		else currate = param;
-		val = (currate - 5) * 20;
+		val = (currate * 22) - 100;
 		assert((val >= -100) && (val <= +100));
 		DBG(5, "[rate %d, param: %d]", val, param);
 		ret = spd_set_voice_rate(conn, val);
