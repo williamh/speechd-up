@@ -18,7 +18,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: options.h,v 1.2 2004-01-23 00:20:15 hanke Exp $
+ * $Id: options.h,v 1.3 2004-01-29 00:12:36 hanke Exp $
  */
 
 #include <getopt.h>
@@ -34,6 +34,7 @@ int SPD_SPK_MODE;
 #define MODE_SINGLE 0
 
 char *SPEAKUP_DEVICE;
+char *SPEAKUP_CODING;
 
 static struct option spd_long_options[] = {
     {"run-daemon", 0, 0, 'd'},
@@ -41,10 +42,11 @@ static struct option spd_long_options[] = {
     {"log-level", 1, 0, 'l'},
     {"log-file", 1, 0, 'L'},
     {"device", 1, 0, 'D'},
+    {"coding", 1, 0, 'c'},
     {"synthesis", 1, 0, 'S'},
     {"version", 0, 0, 'v'},
     {"help", 0, 0, 0},
     {0, 0, 0, 0}
 };
 
-static char* spd_short_options = "dsvhl:L:D:S:";
+static char* spd_short_options = "dsvhl:L:D:S:c:";
