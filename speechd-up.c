@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.3 2004-01-29 00:12:42 hanke Exp $
+ * $Id: speechd-up.c,v 1.4 2004-04-14 19:11:09 kirk Exp $
  */
 
 #include <stdio.h>
@@ -107,42 +107,48 @@ process_command(char command, unsigned int param, int pm)
 {
   int val;
   int ret;
+  static int currate = 5,
+    curpitch = 5;
 
-  switch(command)
-    {
-    case 's':
-      val = (param - 5) * 20;
+  DBG(5, "cmd: %c, param: %d, rel: %d", command, param, pm);
+  if (pm != 0)
+    pm *= param;
+
+  switch(command) {
+
+    case '@':  /* Reset speechd connection */
+      DBG(5, "resetting speech dispatcher connection");
+      spd_spk_reset(0);
+	break;
+
+    case 's': /* speech rate */
+      if (pm) currate += pm;
+      else currate = param;
+      val = (currate - 5) * 20;
       assert((val >= -100) && (val <= +100));
-      DBG(5, "[rate %d]", val);
+      DBG(5, "[rate %d, param: %d]", val, param);
       ret = spd_set_voice_rate(conn, val);
       if (ret == -1) perror("ERROR: Invalid rate!");
       break;
-    case 'p': 
-      if ((pm == 1) && (param == 3))
-	{
-	  DBG(5, "[capital letters on]", val);
-	  spd_set_capital_letters(conn, SPD_CAP_SPELL);
-	}
-      else if ((pm == -1) && (param == 3))
-	{
-	  DBG(5, "[capital letters off]", val);
-	  spd_set_capital_letters(conn, SPD_CAP_NONE);	  
-	}
-      else
-	{
-	  val = (param - 5) * 20;
-	  assert((val >= -100) && (val <= +100));
-	  DBG(5, "[pitch %d]", val);
-	  ret = spd_set_voice_pitch(conn, val);
-	  if (ret == -1) DBG(1, "ERROR: Can't set pitch!");
-	}
+
+  case 'p': /* set pitch command */
+      if (pm) curpitch += pm;
+      else curpitch = param;
+      val = (curpitch - 5) * 20;
+      assert((val >= -100) && (val <= +100));
+      DBG(5, "[pitch %d, param: %d]", val, param);
+      ret = spd_set_voice_pitch(conn, val);
+      if (ret == -1) DBG(1, "ERROR: Can't set pitch!");
       break;
+
     case 'v': 
       DBG(3, "[volume setting not supported yet]", val);
       break;
+
     case 'x': 
       DBG(3, "[tone setting not supported]", val);
       break;
+
     case 'b': 
       switch(param){
       case 0:
@@ -162,6 +168,7 @@ process_command(char command, unsigned int param, int pm)
       }
       if (ret == -1) perror("ERROR: Can't set punctuation mode");
       break;
+
     default:
       DBG(3, "ERROR: [%c: this command is not supported]", command);
     }
@@ -197,22 +204,16 @@ parse_buf(char *buf, size_t bytes)
   po = text;
   m = 0;
 
-  for(i = 0; i < bytes - 1; i++)
+  for(i = 0; i < bytes; i++)
     {
-
-      /* Reset speechd connection */
-      if (buf[i] == DTLK_RESET){
-	spd_spk_reset(0);
-	return 0;
-      }
- 
       /* Stop speaking */
-      else if (buf[i] == DTLK_STOP)
+      if (buf[i] == DTLK_STOP)
 	{
+	  spd_cancel(conn);
 	  DBG(5, "[stop]");
-	  spd_stop(conn);
 	  pi = &(buf[i+1]);
 	  po = text;
+	  m = 0;
 	}
 
       /* Process a command */
@@ -224,7 +225,7 @@ parse_buf(char *buf, size_t bytes)
 	    {	     
 	      DBG(5, "text: |%s|", text);
 	      DBG(5, "[speaking (2)]");
-	      spd_say(conn, SPD_TEXT, text);
+	      spd_say(conn, SPD_MESSAGE, text);
 	      m = 0;
 	    }
       
@@ -238,18 +239,14 @@ parse_buf(char *buf, size_t bytes)
 
 	  /* Read the numerical parameter (one or more digits) */
 	  n = 0;
-	  for (i; (i < bytes - 1) && (n<15); i++)
-	    {
-	      if (!isdigit(buf[i]))
-		{
-		  helper[n] = 0;
-		  cmd_type = buf[i];
-		  break;
-		}
-	      helper[n++] = buf[i];	  
-	    }
-	  param = strtol(helper, NULL, 10);
-	
+	  while (isdigit(buf[i]) && n < 15)
+	    helper[n++] = buf[i++];
+	  if (n) {
+	    helper[n] = 0;
+	    param = strtol(helper, NULL, 10);
+	    cmd_type = buf[i];
+	  }
+
 	  /* Now when we have the command (cmd_type) and it's
 	     parameter, let's communicate it to speechd */
 	  process_command(cmd_type, param, pm);
@@ -279,7 +276,7 @@ parse_buf(char *buf, size_t bytes)
     DBG(5,"text: |%s %d|", text, m);
     DBG(5, "[speaking]");
     // text[m] = 0;
-    spd_say(conn, SPD_TEXT, text);
+    spd_say(conn, SPD_MESSAGE, text);
     DBG(5,"---");
   }
 
@@ -435,8 +432,8 @@ main (int argc, char *argv[])
       close (fd);
       return -1;
     }
-    buf[chars_read-1] = 0;
-
+    buf[chars_read] = 0;
+    DBG(5, "Main loop characters read = %d", chars_read);
     parse_buf(buf, chars_read);
   }
 
