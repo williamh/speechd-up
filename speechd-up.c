@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.4 2004-04-14 19:11:09 kirk Exp $
+ * $Id: speechd-up.c,v 1.5 2004-04-15 17:18:25 kirk Exp $
  */
 
 #include <stdio.h>
@@ -40,7 +40,6 @@
 
 #define BUF_SIZE 1024
 
-#define DTLK_RESET 7
 #define DTLK_STOP 24
 #define DTLK_CMD 1
 
@@ -105,73 +104,114 @@ speechd_close()
 int
 process_command(char command, unsigned int param, int pm)
 {
-  int val;
-  int ret;
-  static int currate = 5,
-    curpitch = 5;
+	int val, ret;
+	static int currate = 5,
+		curpitch = 5;
 
-  DBG(5, "cmd: %c, param: %d, rel: %d", command, param, pm);
-  if (pm != 0)
-    pm *= param;
+	DBG(5, "cmd: %c, param: %d, rel: %d", command, param, pm);
+	if (pm != 0)
+		pm *= param;
 
-  switch(command) {
+	switch(command) {
 
-    case '@':  /* Reset speechd connection */
-      DBG(5, "resetting speech dispatcher connection");
-      spd_spk_reset(0);
-	break;
+	case '@':  /* Reset speechd connection */
+		DBG(5, "resetting speech dispatcher connection");
+		spd_spk_reset(0);
+		break;
 
-    case 's': /* speech rate */
-      if (pm) currate += pm;
-      else currate = param;
-      val = (currate - 5) * 20;
-      assert((val >= -100) && (val <= +100));
-      DBG(5, "[rate %d, param: %d]", val, param);
-      ret = spd_set_voice_rate(conn, val);
-      if (ret == -1) perror("ERROR: Invalid rate!");
-      break;
+	case 'b': /* set punctuation level */
+		switch(param){
+		case 0:
+			DBG(5, "[punctuation all]", val);
+			ret = spd_set_punctuation(conn, SPD_PUNCT_ALL);
+			break;
+		case 1:
+		case 2:
+			DBG(5, "[punctuation some]", val);
+			ret = spd_set_punctuation(conn, SPD_PUNCT_SOME);
+			break;
+		case 3:
+			DBG(5, "[punctuation none]", val);
+			ret = spd_set_punctuation(conn, SPD_PUNCT_NONE);
+			break;
+		default: perror("ERROR: Invalid punctuation mode!");
+		}
+		if (ret == -1) perror("ERROR: Can't set punctuation mode");
+		break;
 
-  case 'p': /* set pitch command */
-      if (pm) curpitch += pm;
-      else curpitch = param;
-      val = (curpitch - 5) * 20;
-      assert((val >= -100) && (val <= +100));
-      DBG(5, "[pitch %d, param: %d]", val, param);
-      ret = spd_set_voice_pitch(conn, val);
-      if (ret == -1) DBG(1, "ERROR: Can't set pitch!");
-      break;
+	case 'o': /* set voice */
+		switch(param)
+		{
+		case 0:
+			DBG(5, "[Voice MALE1]");
+			ret = spd_set_voice_type(conn, SPD_MALE1);
+			break;
+		case 1:
+			DBG(5, "[Voice MALE2]");
+			ret = spd_set_voice_type(conn, SPD_MALE2);
+			break;
+		case 2:
+			DBG(5, "[Voice MALE3]");
+			ret = spd_set_voice_type(conn, SPD_MALE3);
+			break;
+		case 3:
+			DBG(5, "[Voice FEMALE1]");
+			ret = spd_set_voice_type(conn, SPD_FEMALE1);
+			break;
+		case 4:
+			DBG(5, "[Voice FEMALE2]");
+			ret = spd_set_voice_type(conn, SPD_FEMALE2);
+			break;
+		case 5:
+			DBG(5, "[Voice FEMALE3]");
+			ret = spd_set_voice_type(conn, SPD_FEMALE3);
+			break;
+		case 6:
+			DBG(5, "[Voice CHILD_MALE]");
+			ret = spd_set_voice_type(conn, SPD_CHILD_MALE);
+			break;
+		case 7:
+			DBG(5, "[Voice CHILD_FEMALE]");
+			ret = spd_set_voice_type(conn, SPD_CHILD_FEMALE);
+			break;
+		default:
+			DBG(1, "ERROR: Invalid voice %d!", param);
+			break;
+		}
+		if(ret == -1) DBG(1, "ERROR: Can't set voice!");
+		break;
 
-    case 'v': 
-      DBG(3, "[volume setting not supported yet]", val);
-      break;
+	case 'p': /* set pitch command */
+		if (pm) curpitch += pm;
+		else curpitch = param;
+		val = (curpitch - 5) * 20;
+		assert((val >= -100) && (val <= +100));
+		DBG(5, "[pitch %d, param: %d]", val, param);
+		ret = spd_set_voice_pitch(conn, val);
+		if (ret == -1) DBG(1, "ERROR: Can't set pitch!");
+		break;
 
-    case 'x': 
-      DBG(3, "[tone setting not supported]", val);
-      break;
+	case 's': /* speech rate */
+		if (pm) currate += pm;
+		else currate = param;
+		val = (currate - 5) * 20;
+		assert((val >= -100) && (val <= +100));
+		DBG(5, "[rate %d, param: %d]", val, param);
+		ret = spd_set_voice_rate(conn, val);
+		if (ret == -1) perror("ERROR: Invalid rate!");
+		break;
 
-    case 'b': 
-      switch(param){
-      case 0:
-	DBG(5, "[punctuation all]", val);
-	ret = spd_set_punctuation(conn, SPD_PUNCT_ALL);
-	break;
-      case 1:
-      case 2:
-	DBG(5, "[punctuation some]", val);
-	ret = spd_set_punctuation(conn, SPD_PUNCT_SOME);
-	break;
-      case 3:
-	DBG(5, "[punctuation none]", val);
-	ret = spd_set_punctuation(conn, SPD_PUNCT_NONE);
-	break;
-      default: perror("ERROR: Invalid punctuation mode!");
-      }
-      if (ret == -1) perror("ERROR: Can't set punctuation mode");
-      break;
+	case 'v': 
+		DBG(3, "[volume setting not supported yet]", val);
+		break;
 
-    default:
-      DBG(3, "ERROR: [%c: this command is not supported]", command);
-    }
+	case 'x': 
+		DBG(3, "[tone setting not supported]", val);
+		break;
+
+	default:
+		DBG(3, "ERROR: [%c: this command is not supported]", command);
+	}
 
 }
 
