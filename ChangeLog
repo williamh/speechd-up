@@ -1,3 +1,38 @@
+
+2004-04-16 Kirk Reiser <kirk@braille.uwo.ca>
+
+	*  Modified Makefile.am to remove the dependency on libglib which isn't
+	needed and was causing major problems trying to find the correct
+	version of the library.  
+
+	* Modified configure.in to add a test for libspeechd.h which does
+	not get installed by make install of speech dispatcher.  
+
+	
+	* Also modified the INSTALL file to clean up English slightly.
+	
+2004-04-14 Kirk Reiser <kirk@braille.uwo.ca>
+
+        * The changes include modifying two counters which were causing
+	single characters from being processed.  
+
+	* Changed the call to spd_say from priority SPD_TEXT to
+	SPD_MESSAGE because the text priority were cancelling the previous
+	call rather than queueing the messages.  
+
+	* Changed the spd_stop call to spd_cancell() which flushes all
+	pending messages rather than just the one being spoken. 
+
+	* Changed the handling of relative values in command set to work
+	more like they are intended to operate.  
+
+	* Moved the reset test to process_command because resets are
+	supposed to be regular commands.  It still doesn't work quite
+	right but at least it's in the correct place now.  Changed the
+	handling of values in the parse_buf() because it was cutting off
+	the last character in buffer.
+	
+	
 2004-01-29  Hynek Hanke  <hanke@freebsoft.org>
 
 	* options.h: -c and --coding added.
