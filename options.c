@@ -18,7 +18,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: options.c,v 1.1 2004-01-22 21:30:31 hanke Exp $
+ * $Id: options.c,v 1.2 2004-01-23 00:20:10 hanke Exp $
  */
 
 #include <assert.h>
@@ -43,7 +43,7 @@ options_print_help(char *argv[])
     "-l, --log-level      -      Set log level (1..5)\n"
     "-L, --log-file       -      Set log file to path\n"
     "-D, --device         -      Specify the device name of Speakup software synthesis\n"
-    "-v, --version        -      Report version of this program\v"
+    "-v, --version        -      Report version of this program\n"
     "-h, --help           -      Print this info\n\n"
     "Copyright (C) 2003 Brailcom, o.p.s.\n"
     "This is free software; you can redistribute it and/or modify it\n"
