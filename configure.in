@@ -7,7 +7,7 @@ dnl progs
 AC_PROG_CC
 
 dnl info
-AM_INIT_AUTOMAKE("speechd-speakup", "`cat version.sh|grep '^VERSION'|awk -F= '{print $2}'`")
+AM_INIT_AUTOMAKE("speechd-up", "`cat version.sh|grep '^VERSION'|awk -F= '{print $2}'`")
 
 AM_CONFIG_HEADER(config.h)
 
@@ -23,6 +23,8 @@ AC_CHECK_HEADERS(limits.h sys/ioctl.h sys/time.h unistd.h)
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_HEADER_TIME
+
+AC_ARG_VAR(pidpath, Absolute path to a pid file)
 
 dnl Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
