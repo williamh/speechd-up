@@ -1,7 +1,7 @@
 The requirements:
 =================
 
-You will need these components to compile and run speechd-speakup: 
+You will need these components to compile and run speechd-up: 
  - Speech Dispatcher (http://www.freebsoft.org)
  - Speakup (http://www.linux-speakup.org)
 
@@ -25,7 +25,7 @@ follows:
 
 If it doesn't work, try the following:
 
- $ cd speechd-@VERSION
+ $ cd speechd-up-@VERSION
  $ aclocal && autoconf && autoheader && automake -a && automake
  $ ./configure
  $ make
@@ -37,5 +37,23 @@ path by running (as root):
 
  $ make install
 
-If something doesn't work, please contact us on speechd@freebsoft.org .
-    
+Installing SpeakUp
+==================
+
+When installing Speakup, you have to install the speakup_sftsyn
+module and optionally, you can make it the default output module.
+Also, you have to manually create a device named /dev/softsynth.
+Please see SpeakUp's documentation for more details.
+
+Testing
+=======
+
+Then you try to run Speechd-Up as a standalone application
+to see if everything is ok:
+
+ $ speechd_up -s
+
+Later, you can execute it without the -s parameter, preferably from
+a /etc/init.d.
+
+If something doesn't work, please contact us on speechd@freebsoft.org . 
