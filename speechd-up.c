@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.2 2004-01-23 00:20:23 hanke Exp $
+ * $Id: speechd-up.c,v 1.3 2004-01-29 00:12:42 hanke Exp $
  */
 
 #include <stdio.h>
@@ -31,8 +31,10 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <signal.h>
+#include <iconv.h>
 
 #include <libspeechd.h>
+
 
 #include "options.h"
 
@@ -44,8 +46,9 @@
 
 int fd, conn;
 
-
 FILE *logfile;
+
+char *spd_spk_pid_file;
 
 void spd_spk_reset(int sig);
 
@@ -166,22 +169,34 @@ process_command(char command, unsigned int param, int pm)
 }
 
 int
-parse_buf(const char *buf, size_t bytes)
+parse_buf(char *buf, size_t bytes)
 { 
   char helper[16];
   char cmd_type;
   int  n, m;
   unsigned int param;
-  int val;
   int pm;
   int ret;
-  int i;
 
-  static char text[BUF_SIZE];
+  iconv_t cd;
+  int i;
+  int enc_bytes;
+  char *pi, *po;
+  int bytes_left = BUF_SIZE;
+  int in_bytes;
+
+  char text[BUF_SIZE];
 
   assert (bytes <= BUF_SIZE);
 
+  cd = iconv_open("utf-8", SPEAKUP_CODING);
+  if (cd == (iconv_t) -1) FATAL(1, "Requested character set conversion not possible"
+			"by iconv: %s!", strerror(errno));
+
+  pi = buf;
+  po = text;
   m = 0;
+
   for(i = 0; i < bytes - 1; i++)
     {
 
@@ -196,6 +211,8 @@ parse_buf(const char *buf, size_t bytes)
 	{
 	  DBG(5, "[stop]");
 	  spd_stop(conn);
+	  pi = &(buf[i+1]);
+	  po = text;
 	}
 
       /* Process a command */
@@ -205,7 +222,7 @@ parse_buf(const char *buf, size_t bytes)
 	  /* If there is some text before this command, say it */
 	  if (m > 0)
 	    {	     
-	      DBG(5, "%s", text);
+	      DBG(5, "text: |%s|", text);
 	      DBG(5, "[speaking (2)]");
 	      spd_say(conn, SPD_TEXT, text);
 	      m = 0;
@@ -213,7 +230,7 @@ parse_buf(const char *buf, size_t bytes)
       
 	  /* If the digit is signed integer, read the sign.  We have
 	     to do it this way because +3, -3 and 3 seem to be three
-	     different thinks in this protocol*/
+	     different thinks in this protocol */
 	  i++;
 	  if (buf[i] == '+') i++, pm = 1;
 	  else if (buf[i] == '-') i++, pm = -1;
@@ -236,23 +253,35 @@ parse_buf(const char *buf, size_t bytes)
 	  /* Now when we have the command (cmd_type) and it's
 	     parameter, let's communicate it to speechd */
 	  process_command(cmd_type, param, pm);
+	  pi = &(buf[i+1]);
+	  po = text;
 	}
       else
 	{
 	  /* This is ordinary text, so put the byte into our text
-	   buffer for later synthesis. */	 
-	  text[m++] = buf[i];	  
+	     buffer for later synthesis. */
+	  in_bytes = 1;
+	  enc_bytes = iconv(cd, &pi, &in_bytes, &po, &bytes_left);
+	  if (enc_bytes == -1) DBG(1,"unknown character in input"); /*;*/
+	  else{
+	    m++;
+	    *po = 0;
+	  }	  
 	}
     }
 
+  iconv_close(cd);
+
   /* Finally, say the text we read from /dev/softsynth*/
   assert(m>=0);
-  DBG(5,"%s", text);
-  DBG(5, "[speaking]");
-  text[m] = 0;
-  spd_say(conn, SPD_TEXT, text);
-
-  DBG(5,"---");
+  
+  if (m != 0){
+    DBG(5,"text: |%s %d|", text, m);
+    DBG(5, "[speaking]");
+    // text[m] = 0;
+    spd_say(conn, SPD_TEXT, text);
+    DBG(5,"---");
+  }
 
   return 0;
 }
@@ -276,6 +305,72 @@ spd_spk_reset(int sig)
 }
 
 int
+create_pid_file()
+{
+    FILE *pid_file;
+    int pid_fd;
+    struct flock lock;
+    int ret;    
+      
+    /* If the file exists, examine it's lock */
+    pid_file = fopen(spd_spk_pid_file, "r");
+    if (pid_file != NULL){
+        pid_fd = fileno(pid_file);
+
+        lock.l_type = F_WRLCK;
+        lock.l_whence = SEEK_SET;
+        lock.l_start = 1;
+        lock.l_len = 3;
+
+        /* If there is a lock, exit, otherwise remove the old file */
+        ret = fcntl(pid_fd, F_GETLK, &lock);
+        if (ret == -1){
+            fprintf(stderr, "Can't check lock status of an existing pid file.\n");
+            return -1;
+        }
+
+        fclose(pid_file);
+        if (lock.l_type != F_UNLCK){
+            fprintf(stderr, "Speechd-Up already running.\n");
+            return -1;
+        }
+
+        unlink(spd_spk_pid_file);        
+    }    
+    
+    /* Create a new pid file and lock it */
+    pid_file = fopen(spd_spk_pid_file, "w");
+    if (pid_file == NULL){
+        fprintf(stderr, "Can't create pid file in %s, wrong permissions?\n",
+                spd_spk_pid_file);
+        return -1;
+    }
+    fprintf(pid_file, "%d\n", getpid());
+    fflush(pid_file);
+
+    pid_fd = fileno(pid_file);
+    lock.l_type = F_WRLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start = 1;
+    lock.l_len = 3;
+
+    ret = fcntl(pid_fd, F_SETLK, &lock);
+    if (ret == -1){
+        fprintf(stderr, "Can't set lock on pid file.\n");
+        return -1;
+    }
+
+    return 0;
+}
+
+void
+destroy_pid_file()
+{
+    unlink(spd_spk_pid_file);
+}
+
+
+int
 main (int argc, char *argv[])
 {
   int i;
@@ -286,18 +381,26 @@ main (int argc, char *argv[])
   options_set_default();
   options_parse(argc, argv);
 
-  logfile = fopen(LOG_FILE_NAME, "w");
+  if (!strcmp(PIDPATH, ""))
+    spd_spk_pid_file = (char*) strdup("/var/run/speechd-up.pid");
+  else
+    spd_spk_pid_file = (char*) strdup(PIDPATH"speechd.pid");
+  
+  if (create_pid_file() == -1) exit(1);
+
+
+  logfile = fopen(LOG_FILE_NAME, "w+");
   if (logfile == NULL){
-    perror("ERROR: Can't open logfile in /tmp!\n");
+    fprintf(stderr, "ERROR: Can't open logfile in %s! Wrong permissions?\n", LOG_FILE_NAME);
     exit(1);
   }
 
   /* Fork, set uid, chdir, etc. */
   if (SPD_SPK_MODE == MODE_DAEMON){
     daemon(0,0);	   
-    //    /* Re-create the pid file under this process */
-    //    unlink(speechd_pid_file);
-    // if (create_pid_file() == -1) return -1;
+    /* Re-create the pid file under this process */
+    destroy_pid_file();
+    if (create_pid_file() == -1) return 1;
   }
 
   /* Register signals */
