@@ -1,0 +1,7 @@
+
+Version 0.0
+        
+  * Initial version
+  * Provides basic software synthesis (through speechd) to SpeakUp.
+  * Basic parameter setting DTLK commands from Speakup supported
+  

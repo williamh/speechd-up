@@ -1,0 +1,17 @@
+
+Short-term goals
+================       
+
+  * Complete the support of the Speakup /dev/softsynth protocol.
+    
+  * Create pid files on start.
+
+Longer-term goals
+=================
+
+
+We don't know how to do it (external help needed)
+=================================================
+
+  * RPM packaging
+
