@@ -18,7 +18,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: options.c,v 1.2 2004-01-23 00:20:10 hanke Exp $
+ * $Id: options.c,v 1.3 2004-01-29 00:12:29 hanke Exp $
  */
 
 #include <assert.h>
@@ -43,6 +43,7 @@ options_print_help(char *argv[])
     "-l, --log-level      -      Set log level (1..5)\n"
     "-L, --log-file       -      Set log file to path\n"
     "-D, --device         -      Specify the device name of Speakup software synthesis\n"
+    "-c, --coding         -      Specify the default encoding to use\n"
     "-v, --version        -      Report version of this program\n"
     "-h, --help           -      Print this info\n\n"
     "Copyright (C) 2003 Brailcom, o.p.s.\n"
@@ -72,6 +73,7 @@ options_set_default(void)
   LOG_LEVEL = 3;
   LOG_FILE_NAME = (char*) strdup("/var/log/speechd-up.log");
   SPEAKUP_DEVICE = (char*) strdup("/dev/softsynth");
+  SPEAKUP_CODING = (char*) strdup("iso-8859-1");
 }
 
 void
@@ -104,10 +106,16 @@ options_parse(int argc, char *argv[])
       SPD_OPTION_SET_INT(LOG_LEVEL);
       break;
     case 'L':
+      if (LOG_FILE_NAME != 0) free(LOG_FILE_NAME);
       LOG_FILE_NAME = (char*) strdup(optarg);
       break;
     case 'D':
+      if (SPEAKUP_DEVICE != 0) free(SPEAKUP_DEVICE);
       SPEAKUP_DEVICE = (char*) strdup(optarg);
+      break;
+    case 'c':
+      if (SPEAKUP_CODING != 0) free (SPEAKUP_CODING);
+      SPEAKUP_CODING = (char*) strdup(optarg);
       break;
     case 'v':
       options_print_version();
