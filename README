@@ -1,7 +1,7 @@
-This is the SpeechD-Up project. It is a part of Free(b)soft project
-(http://www.freebsoft.org), which is intended to allow blind and
-visually impaired people to work with computer and Internet based on
-free software.
+This is the SpeechD-Up project. It is a part of the Free(b)soft
+project (http://www.freebsoft.org), which is intended to allow blind
+and visually impaired people to work with computers and the Internet
+based on free software.
 
 SpeechD-Up provides an interface daemon between Speakup (kernel based
 screen reader) and Speech Dispatcher (common interface to speech
