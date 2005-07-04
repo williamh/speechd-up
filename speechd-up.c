@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.6 2004-11-01 18:47:34 kirk Exp $
+ * $Id: speechd-up.c,v 1.7 2005-07-04 09:35:02 hanke Exp $
  */
 
 #include <stdio.h>
@@ -446,16 +446,29 @@ main (int argc, char *argv[])
 
   DBG(1,"Speechd-speakup starts!");
 
-  if ((fd = open(SPEAKUP_DEVICE, O_RDONLY)) < 0) {
-    FATAL(2, "ERROR! Unable to open soft synth device (%s)\n", SPEAKUP_DEVICE);
-    return -1;
-  }
-  if ( fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK) == -1) {
-    FATAL(5, "fcntl() failed");
-    return (-1);
+  if (!PROBE_MODE){
+      if ((fd = open(SPEAKUP_DEVICE, O_RDONLY)) < 0) {
+	  FATAL(2, "ERROR! Unable to open soft synth device (%s)\n", SPEAKUP_DEVICE);
+	  return -1;
+      }
+      if ( fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK) == -1) {
+	  FATAL(5, "fcntl() failed");
+	  return (-1);
+      }
   }
 
   speechd_init();
+
+  if (PROBE_MODE){
+      DBG(1, "This is just a probe mode. Not trying to read Speakup's device.\n");     
+      DBG(1, "Trying to say something on Speech Dispatcher\n");
+      spd_say(conn, SPD_MESSAGE, "Hello! It seems SpeechD-Up works correctly!");
+      DBG(1, "Trying to close connection to Speech Dispatcher\n");
+      spd_close(conn);
+      DBG(1, "SpeechD-Up is terminating correctly in probe mode");
+      return 0;
+  }
+      
 
   while (1){
     FD_ZERO(&fd_list);
