@@ -4,6 +4,8 @@ The requirements:
 You will need these components to compile and run speechd-up: 
  - Speech Dispatcher (http://www.freebsoft.org)
  - Speakup (http://www.linux-speakup.org)
+ - texinfo (you can live without it if you use just `make speechd-up', but
+	you won't have the documentation installed)
 
 If you are building from CVS, you also need these:
  - automake 1.7+, autoconf, pkg-config and libtool
@@ -14,46 +16,57 @@ We recommend also installing these packages:
 Building SpeechD-Up:
 ===========================
 
+Please read the file BUGS first so that you are aware of the possible
+issues.
+
 To compile the SpeechD-Up, simply extract the distribution archive and
 change to speechd-<version> directory and run "make all" command as
 follows:
 
  $ tar -xzvf speechd-up-@VERSION.tar.gz
  $ cd speechd-up-@VERSION
+
+Only *if you are building from CVS*, you must run buid.sh
+
+ $ ./build.sh
+
+If build.sh fails, please triple-check you really have the tools listed above
+in their specified versions. This is the most common source of problems. Avoid
+them by using the distribution tarball, which doesn't need this step, whenever
+you can.
+
+Proceed like ordinary
+
  $ ./configure
  $ make all
-
-If it doesn't work, try the following:
-
- $ cd speechd-up-@VERSION
- $ aclocal && autoconf && autoheader && automake -a && automake
- $ ./configure
- $ make
-
-(You can use ./build.sh instead of the auto-toolchain) 
 
 If everything worked ok, you can install all the parts to the default
 path by running (as root):
 
  $ make install
 
-Installing SpeakUp
-==================
+Making SpeakUp work with SpeechdUp and software synthesis
+=========================================================
 
-When installing Speakup, you have to install the speakup_sftsyn
-module and optionally, you can make it the default output module.
-Also, you have to manually create a device named /dev/softsynth.
-Please see SpeakUp's documentation for more details.
+Please see the info documentation you obtained with SpeechD-Up for this
+(info speechd-up) or go to http://www.freebsoft.org/doc/speechd-up .
 
 Testing
 =======
 
 Next try to run Speechd-Up as a standalone application
-to see if everything is ok:
+in the probe mode to see if everything is ok:
 
- $ speechd_up -s
+ $ speechd-up --run-single --probe
 
-Later, you can execute it without the -s parameter, preferably from
-a /etc/init.d.
+if you hear a message, then SpeechD-Up itself is working correctly
+and you can try to connect it to Speakup
 
-If something doesn't work, please contact us on speechd@freebsoft.org . 
+ $ speechd-up --run-single
+
+Later, you can execute it without the --run-single parameter, preferably from a
+/etc/init.d script.
+
+If something doesn't work, please first look into the file BUGS in this diretory
+and then contact us on speechd@lists.freebsoft.org or send a bug report to
+speechd-up@bugs.freebsoft.org. 
