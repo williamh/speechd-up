@@ -6,7 +6,8 @@ based on free software.
 SpeechD-Up provides an interface daemon between Speakup (kernel based
 screen reader) and Speech Dispatcher (common interface to speech
 synthesis). Using SpeechD-Up, you can make Speakup work with software
-synthesizers like Flite or Festival.
+synthesizers like Flite or Festival. This interface is in no way optimal
+and it suffers of many problems. Some users still find it useful.
 
 To build and install speechd-up and all of it's components, read the file INSTALL
 

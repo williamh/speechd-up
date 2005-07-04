@@ -1,3 +1,64 @@
 
-No known bugs.
+Many known bugs.
 
+* Reading keys/characters is slow
+
+The way Speakup passes individual characters after the user types them on the
+screen makes it impossible to tell these are individual characters typed by the
+user and so no caching mechanisms are used in Speech Dispatcher and everything
+is synthesized like an ordinary text.
+
+Worse, spaces appearing around single characters as received by Speakup make
+some synthesizers add additional delays into the resulting sound.
+
+* It doesn't speak my language / it uses some weird character set
+
+Speakup currently only supports English. You can make a try with
+	speechd-up -c <character-set>
+but if you don't succeed, it's better to give it up (unless you want
+to contribute to Speakup's developement).
+
+* The spelling/punctuation modes of my favourite synthesizer don't work.
+
+Speakup uses it's own very simple spelling and punctuation substitution and
+doesn't allow the TTS to use it's own user-specified rules.
+
+* It doesn't work in UTF-8
+
+UTF-8 should work as long as you only use characters encountered in the basic
+ASCII, so English should work. But Speakup doesn't really support UTF-8 in
+any way (nor it can, there is no UTF-8 support inside the kernel -- just
+workarounds targeted at visuall interpretation; the kernel virtual terminal
+drivers contain many bariers for accessibility).
+
+* I can't switch synthesizers on fly
+
+The way the interface Speakup -- Speech Dispatcher is designed, this is not
+possible.  You can switch them statically in Speech Dispatcher's configuration
+though. If you use Speakup's identification "*:speechd-up:*" you can even
+choose a synthesizer specifically for Speakup.
+
+* Any other more advanced thing doesn't work or something is too slow or ...
+
+There are many problems with how this interface is done and with how Speakup is
+designed. It's probably much better to use Speakup with a hardware synthesizer,
+if you have the possibility. Speakup was not designed with user space software
+synthesis in mind and the necessary changes would probably be too difficult
+now. There were many important design decisions made which are very reasonable
+for hardware synthesizers, but they just don't mix well with software
+synthesis.
+
+On the other hand, experience shows people still find this interface to
+software speech synthesis useful, mostly because of lack of anything
+else. That's the reason why we provide this application and we will try to help
+you if you have problems or questions.
+
+If you are looking for a software speech synthesis solution, it's probably
+better to look into Emacs and it's interfaces Emacspeak and speechd-el.  As of
+May 2005, we don't know about any good screen reader that would be useful with
+software synthesis, but that might change.
+
+
+PLEASE don't let this document discourage you in REPORTING BUGS that are not
+listed here. It might be something we *are* able to fix and other user's might
+appreciate it. You can report bugs on <speechd@bugs.freebsoft.org>.

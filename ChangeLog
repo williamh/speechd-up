@@ -1,3 +1,27 @@
+2005-07-04  Hynek Hanke  <hanke@chopin>
+
+	* TODO: Updated.
+
+	* INSTALL: Updated.
+
+	* Makefile.am: Create info documentation.
+
+	* speechd-up.texi: New file
+
+	* options.h: New option -p, --probe.
+
+	* options.c (options_set_default): Set PROBE_MODE to false.
+	(options_parse): New option: --probe.
+
+	* speechd-up.c (main): Say something in probe mode.
+	(main): Don't open Speakup device in probe mode.
+
+2005-05-06  Hynek Hanke  <hanke@brailcom.org>
+
+	* INSTALL: Updated.
+
+	* BUGS: Document the many known bugs.
+
 2005-05-06  Hynek Hanke  <hanke@brailcom.org>
 
 	* Makefile: Added Luke Yelavich's patch that fixes the PIDPATH problem
