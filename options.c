@@ -18,7 +18,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: options.c,v 1.3 2004-01-29 00:12:29 hanke Exp $
+ * $Id: options.c,v 1.4 2005-07-04 09:35:14 hanke Exp $
  */
 
 #include <assert.h>
@@ -44,6 +44,8 @@ options_print_help(char *argv[])
     "-L, --log-file       -      Set log file to path\n"
     "-D, --device         -      Specify the device name of Speakup software synthesis\n"
     "-c, --coding         -      Specify the default encoding to use\n"
+    "-p, --probe          -      Initialize everything and try to say some message\n"
+    "                            but don't connect to SpeakUp. For testing purposes.\n"
     "-v, --version        -      Report version of this program\n"
     "-h, --help           -      Print this info\n\n"
     "Copyright (C) 2003 Brailcom, o.p.s.\n"
@@ -74,6 +76,7 @@ options_set_default(void)
   LOG_FILE_NAME = (char*) strdup("/var/log/speechd-up.log");
   SPEAKUP_DEVICE = (char*) strdup("/dev/softsynth");
   SPEAKUP_CODING = (char*) strdup("iso-8859-1");
+  PROBE_MODE = 0;
 }
 
 void
@@ -97,34 +100,37 @@ options_parse(int argc, char *argv[])
 
     switch(c_opt){
     case 'd': 
-      SPD_SPK_MODE = MODE_DAEMON;
-      break;
+	SPD_SPK_MODE = MODE_DAEMON;
+	break;
     case 's':
-      SPD_SPK_MODE = MODE_SINGLE;
-      break;
+	SPD_SPK_MODE = MODE_SINGLE;
+	break;
     case 'l':
-      SPD_OPTION_SET_INT(LOG_LEVEL);
-      break;
+	SPD_OPTION_SET_INT(LOG_LEVEL);
+	break;
     case 'L':
-      if (LOG_FILE_NAME != 0) free(LOG_FILE_NAME);
-      LOG_FILE_NAME = (char*) strdup(optarg);
+	if (LOG_FILE_NAME != 0) free(LOG_FILE_NAME);
+	LOG_FILE_NAME = (char*) strdup(optarg);
       break;
     case 'D':
-      if (SPEAKUP_DEVICE != 0) free(SPEAKUP_DEVICE);
-      SPEAKUP_DEVICE = (char*) strdup(optarg);
+	if (SPEAKUP_DEVICE != 0) free(SPEAKUP_DEVICE);
+	SPEAKUP_DEVICE = (char*) strdup(optarg);
       break;
     case 'c':
-      if (SPEAKUP_CODING != 0) free (SPEAKUP_CODING);
-      SPEAKUP_CODING = (char*) strdup(optarg);
-      break;
+	if (SPEAKUP_CODING != 0) free (SPEAKUP_CODING);
+	SPEAKUP_CODING = (char*) strdup(optarg);
+	break;
     case 'v':
-      options_print_version();
-      exit(0);
-      break;
+	options_print_version();
+	exit(0);
+	break;
     case 'h':
-      options_print_help(argv);
-      exit(0);
-      break;
+	options_print_help(argv);
+	exit(0);
+	break;
+    case 'p':
+	PROBE_MODE = 1;
+	break;
     default:
       printf("Error: Unrecognized option\n\n");
       options_print_help(argv);
