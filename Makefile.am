@@ -9,3 +9,15 @@ COMPILE = $(CC) $(speechd_up_CFLAGS) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLA
 EXTRA_DIST= ChangeLog NEWS TODO AUTHORS COPYING INSTALL README
 
 info_TEXINFOS = speechd-up.texi
+
+SUFFIXES = .html
+html_docs = speechd-up.html
+HTMLDIR = htmldoc
+
+# MAINTAINERCLEANFILES = speechd-up/*
+
+.texi.html:
+	$(MAKEINFO) --html -o $(HTMLDIR) $(info_TEXINFOS) $<
+
+.PHONY: html
+html: $(html_docs)
