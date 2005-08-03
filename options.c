@@ -18,7 +18,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: options.c,v 1.4 2005-07-04 09:35:14 hanke Exp $
+ * $Id: options.c,v 1.5 2005-08-03 13:00:59 hanke Exp $
  */
 
 #include <assert.h>
@@ -36,8 +36,8 @@ options_print_help(char *argv[])
     assert(argv);
     assert(argv[0]);
 
-    printf("Usage: %s [-{d|s}] [-l {1|2|3|4|5}] [-L=logfile] [-p=spd_port] [-d=spk_device] | [-v] | [-h]\n", argv[0]);
-    printf("Speech Dispatcher -- Common interface for Speech Synthesis (GNU GPL)\n\n");
+    printf("Usage: %s [-{d|s}] [-l {1|2|3|4|5}] [-L=logfile] [-d=spk_device] | [-v] | [-h]\n", argv[0]);
+    printf("SpeechD-Up -- Interface between Speech Dispatcher and SpeakUp (GNU GPL)\n\n");
     printf("-d, --run-daemon     -      Run as a daemon\n"
     "-s, --run-single     -      Run as single application\n"
     "-l, --log-level      -      Set log level (1..5)\n"
@@ -48,12 +48,12 @@ options_print_help(char *argv[])
     "                            but don't connect to SpeakUp. For testing purposes.\n"
     "-v, --version        -      Report version of this program\n"
     "-h, --help           -      Print this info\n\n"
-    "Copyright (C) 2003 Brailcom, o.p.s.\n"
+    "Copyright (C) 2003,2005 Brailcom, o.p.s.\n"
     "This is free software; you can redistribute it and/or modify it\n"
     "under the terms of the GNU General Public License as published by\n"
     "the Free Software Foundation; either version 2, or (at your option)\n"
     "any later version. Please see COPYING for more details.\n\n"
-    "Please report bugs to <speechd-speak-bugs@freebsoft.org>\n\n");
+    "Please report bugs to <speechd-up@bugs.freebsoft.org>\n\n");
 }
 
 void
