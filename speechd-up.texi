@@ -107,7 +107,7 @@ software synthesizer. We strongly recommend a Free Software package
 quite good quality of some voices and quick responses. However, you
 might chose any of the synthesizers supported by Speech Dispatcher
 (please see
-@url{http://http://www.freebsoft.org/doc/speechd/speech-dispatcher_10.html#SEC10})
+@url{http://www.freebsoft.org/doc/speechd/speech-dispatcher_10.html#SEC10})
 
 Read the installation instructions for your chosen synthesizer and
 install it. There are Debian packages for both Festival and Flite.
@@ -383,7 +383,7 @@ larger than half a megabyte unless we ask you.
 
 If you want to contribute to the development of Speech Dispatcher,
 we will be very happy if you do so. Please contact us on 
-@email{manage@@freebsoft.org}.
+@email{speechd@@lists.freebsoft.org}.
 
 There is a short, definitively not exhaustive, list of how you can
 help us and other users.
