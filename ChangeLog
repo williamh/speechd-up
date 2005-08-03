@@ -1,5 +1,7 @@
 2005-08-03  Hynek Hanke  <hanke@chopin>
 
+	* options.h: Include the necessary headers so that gcc doesn't complain.
+
 	* speechd-up.texi: Mailing list correctsions.
 
 	* options.c (options_print_help): Minor corrections.
