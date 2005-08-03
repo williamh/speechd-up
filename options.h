@@ -18,13 +18,13 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: options.h,v 1.4 2005-07-04 09:35:11 hanke Exp $
+ * $Id: options.h,v 1.5 2005-08-03 13:02:59 hanke Exp $
  */
 
 #include <getopt.h>
 
 #define PACKAGE "speechd-up"
-#define VERSION "0.0"
+#define VERSION "0.1"
 
 int LOG_LEVEL;
 char *LOG_FILE_NAME;

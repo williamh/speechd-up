@@ -1,3 +1,9 @@
+2005-08-03  Hynek Hanke  <hanke@chopin>
+
+	* speechd-up.texi: Mailing list correctsions.
+
+	* options.c (options_print_help): Minor corrections.
+
 2005-07-04  Hynek Hanke  <hanke@chopin>
 
 	* TODO: Updated.
