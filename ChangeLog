@@ -1,3 +1,7 @@
+2005-09-24  Hynek Hanke  <hanke@chopin>
+
+	* speechd-up.c: Use new libspeechd interface to spd_open().
+
 2005-08-03  Hynek Hanke  <hanke@chopin>
 
 	* options.h: Include the necessary headers so that gcc doesn't complain.
