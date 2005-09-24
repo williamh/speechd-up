@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.7 2005-07-04 09:35:02 hanke Exp $
+ * $Id: speechd-up.c,v 1.8 2005-09-24 11:18:37 hanke Exp $
  */
 
 #include <stdio.h>
@@ -43,7 +43,8 @@
 #define DTLK_STOP 24
 #define DTLK_CMD 1
 
-int fd, conn;
+int fd;
+SPDConnection *conn;
 
 FILE *logfile;
 
@@ -91,7 +92,7 @@ DBG(int level, char *format, ...)
 void
 speechd_init()
 {
-  conn = spd_open("speakup", "softsynth", NULL);
+  conn = spd_open("speakup", "softsynth", "test", SPD_MODE_THREADED);
   if (conn == 0) FATAL(1, "ERROR! Can't connect to Speech Dispatcher!");
 }
 
@@ -462,7 +463,7 @@ main (int argc, char *argv[])
   if (PROBE_MODE){
       DBG(1, "This is just a probe mode. Not trying to read Speakup's device.\n");     
       DBG(1, "Trying to say something on Speech Dispatcher\n");
-      spd_say(conn, SPD_MESSAGE, "Hello! It seems SpeechD-Up works correctly!");
+      spd_say(conn, SPD_MESSAGE, "Hello! It seems SpeechD-Up works correctly!\n");
       DBG(1, "Trying to close connection to Speech Dispatcher\n");
       spd_close(conn);
       DBG(1, "SpeechD-Up is terminating correctly in probe mode");
@@ -486,7 +487,7 @@ main (int argc, char *argv[])
       return -1;
     }
     buf[chars_read] = 0;
-    DBG(5, "Main loop characters read = %d", chars_read);
+    DBG(5, "Main loop characters read = %d : (%s)", chars_read, buf);
     parse_buf(buf, chars_read);
   }
 
