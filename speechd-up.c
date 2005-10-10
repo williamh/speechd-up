@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.8 2005-09-24 11:18:37 hanke Exp $
+ * $Id: speechd-up.c,v 1.9 2005-10-10 10:34:41 hanke Exp $
  */
 
 #include <stdio.h>
@@ -230,8 +230,8 @@ parse_buf(char *buf, size_t bytes)
   int i;
   int enc_bytes;
   char *pi, *po;
-  int bytes_left = BUF_SIZE;
-  int in_bytes;
+  size_t bytes_left = BUF_SIZE;
+  size_t in_bytes;
 
   char text[BUF_SIZE];
 
@@ -413,7 +413,7 @@ main (int argc, char *argv[])
 {
   int i;
   size_t chars_read;
-  unsigned char buf[BUF_SIZE];
+  char buf[BUF_SIZE];
   fd_set fd_list;
 
   options_set_default();
