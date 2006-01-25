@@ -19,17 +19,28 @@
 @page
 @vskip 0pt plus 1filll
 
-This manual documents SpeechD-Up, version 0.1.
+This manual documents SpeechD-Up, version 0.3.
 
-Copyright @copyright{} 2005 Brailcom, o.p.s.
+Copyright @copyright{} 2005,2006 Brailcom, o.p.s.
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.2
-or any later version published by the Free Software Foundation;
-with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
-A copy of the license is included in the section entitled "GNU
-Free Documentation License".
+under the terms of the GNU Free Documentation License, Version 1.2 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts and no Back-Cover Texts.
+A copy of the license is included in the section entitled ``GNU Free
+Documentation License.''
+@end quotation
+
+You can also (at your option) distribute this manual under the GNU
+General Public License:
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2 of the License, or (at your
+option) any later version. A copy of the license is included in the
+section entitled ``GNU General Public License''
 @end quotation
 
 @end titlepage
@@ -37,16 +48,28 @@ Free Documentation License".
 @ifnottex
 @node Top, Installing, (dir), (dir)
 
-This manual documents SpeechD-Up, version 0.1.
+This manual documents SpeechD-Up, version 0.3.
 
-Copyright @copyright{} 2001, 2002, 2003 Brailcom, o.p.s.
+Copyright @copyright{} 2005, 2006 Brailcom, o.p.s.
 
 @quotation
-Permission is granted to copy, distribute and/or modify this document under the
-terms of the GNU Free Documentation License, Version 1.2 or any later version
-published by the Free Software Foundation; with no Invariant Sections, no
-Front-Cover Texts, and no Back-Cover Texts.  A copy of the license is included
-in the section entitled "GNU Free Documentation License".
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with no Front-Cover Texts and no Back-Cover Texts.
+A copy of the license is included in the section entitled ``GNU Free
+Documentation License.''
+@end quotation
+
+You can also (at your option) distribute this manual under the GNU
+General Public License:
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 2 of the License, or (at your
+option) any later version. A copy of the license is included in the
+section entitled ``GNU General Public License''
 @end quotation
 @end ifnottex
 
