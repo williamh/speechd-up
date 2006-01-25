@@ -1,3 +1,18 @@
+2006-01-25  Hynek Hanke  <hanke@chopin>
+
+	* version.sh (VERSION): 0.3 release.
+
+	* speechd-up.texi: Double-license: GFDL and GPL.
+	
+	* speechd-up.c: Incorporated Michael McDonalds patch for index
+	marking support (not included before into CVS because it would
+	cause dependency on non-released-yet version of Dispatcher)
+
+	* speechd-up.c: Handle both the old and the new device type for
+	/dev/softsynth (O_RDWR and O_RDONLY). (not included before into
+	CVS because it would cause dependency on non-released-yet version
+	of Dispatcher)
+	
 2005-10-10  Hynek Hanke  <hanke@chopin>
 
 	* speechd-up.c (main): Correct types of in_bytes and bytes_left
@@ -10,7 +25,6 @@
 2005-08-03  Hynek Hanke  <hanke@chopin>
 
 	* options.h: Include the necessary headers so that gcc doesn't complain.
-
 	* speechd-up.texi: Mailing list correctsions.
 
 	* options.c (options_print_help): Minor corrections.

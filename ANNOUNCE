@@ -1,0 +1,47 @@
+
+SpeechD-Up 0.3
+==============
+
+The Brailcom organization is happy to announce the availability of SpeechD-Up
+0.3 developed as a part of the Free(b)Soft project. Please read `What is new'
+and `NOTES' bellow.
+
+* What is SpeechD-Up?
+
+SpechD-Up is a very simple simple interface from Speakup to Speech Dispatcher
+making it possible to use Speakup with software synthesis. Speakup is a
+kernel-based screen reader allowing blind and visually impaired people to use
+the computer.
+
+* What is new in 0.3?
+
+ - Support for the 'Read All' command in Speakup
+	(thanks to Michael McDonald)
+
+ - Bugfixes
+
+ NOTES:
+    - You need to upgrade to Speech Dispatcher 0.6 before installing
+      this version of SpeechD-Up. Please visit
+	http://www.freebsoft.org/speechd
+
+    - Currently, it is possible to use 'Read All' with Festival, one of
+      the most advanced Free Software TTS system. The other simpler ones
+      don't support index marking. You need to update Speakup to a recent
+      version, if you like to try.
+
+
+* Where to get it?
+
+  You can get the distribution tarball of the released version from
+  http://www.freebsoft.org/pub/projects/speechd-up/speechd-up-0.3.tar.gz
+
+  The home page of the project is http://www.freebsoft.org/speechd-up
+
+* How to report bugs?
+
+  Please report bugs at <speechd@bugs.freebsoft.org>. For other
+  contact please use <speechd@lists.freebsoft.org>
+  
+
+Happy synthesizing!

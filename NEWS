@@ -1,5 +1,15 @@
 
+
 Version 0.3
+
+  * Now supports the `Read all' capability of Speakup through
+    index marking, thanks to Michael McDonald.
+
+  * Bugfixes.
+
+  * Documentation improvements.
+
+Version 0.2
 
   * Minor improvements
 

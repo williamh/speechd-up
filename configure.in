@@ -13,7 +13,7 @@ AM_CONFIG_HEADER(config.h)
 
 dnl Checks for libraries.
 AC_CHECK_LIB(speechd,
-        spd_open,,
+        spd_set_data_mode,,
         echo "*** Required speechd library missing! See INSTALL .";exit 1)
 
 dnl Checks for header files.

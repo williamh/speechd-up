@@ -3,8 +3,10 @@ The requirements:
 
 You will need these components to compile and run speechd-up: 
  - Speech Dispatcher (http://www.freebsoft.org)
-     (including libspeechd2 or newer -- part of Speech Dispatcher 0.6)
+     (including libspeechd.so.2 or newer -- part of Speech Dispatcher 0.6)
  - Speakup (http://www.linux-speakup.org)
+	(you need to install a newer version if you want to make
+	use of the Read All command)
  - texinfo (you can live without it if you use just `make speechd-up', but
 	you won't have the documentation installed)
 
@@ -19,6 +21,9 @@ Building SpeechD-Up:
 
 Please read the file BUGS first so that you are aware of the possible
 issues.
+
+! You need to upgrade to Speech Dispatcher 0.6 before trying to compile
+and install this version of SpeechD-Up !
 
 To compile the SpeechD-Up, simply extract the distribution archive and
 change to speechd-<version> directory and run "make all" command as
