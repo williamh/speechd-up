@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.10 2006-01-25 12:17:33 hanke Exp $
+ * $Id: speechd-up.c,v 1.11 2006-04-23 20:46:27 hanke Exp $
  */
 
 #include <stdio.h>
@@ -93,7 +93,9 @@ DBG(int level, char *format, ...)
   }				
 }
 
-void index_marker_callback(size_t msg_id, size_t client_id, SPDNotificationType type, char *index_mark)
+void
+index_marker_callback(size_t msg_id, size_t client_id, SPDNotificationType type,
+		      char *index_mark)
 {
   DBG(5,"Index Mark Callback");
   int cw = write(fd, index_mark, sizeof(index_mark));
@@ -118,122 +120,216 @@ speechd_close()
 }
 
 int
+init_speakup_tables()
+{
+    FILE* fp_char = fopen ("/proc/speakup/characters", "w");
+    if (fp_char)
+	{
+	    int i=0;
+	    
+	    fprintf(fp_char,"32 space\n");
+
+	    for (i=33;i<256;i++)
+		{
+		    
+		    fprintf(fp_char,"%d %c\n", i, i );
+		}
+	    fclose(fp_char);
+	}
+    else return -1;
+	
+    
+    fp_char = fopen ("/proc/speakup/chartab", "w");
+    if (fp_char)
+	{
+	    int i=0;
+	    for (i='a'; i<='z'; i++)
+		{
+		    fprintf(fp_char,"%d\tALPHA\n", i);
+		}
+	    for (i='A'; i<='Z'; i++)
+		{
+		    fprintf(fp_char,"%d\tALPHA\n", i);
+		}
+	    for (i=128; i<256; i++)
+		{
+		    fprintf(fp_char,"%d\tALPHA\n", i);
+		}
+	    fclose(fp_char);
+	}
+    else return -1;
+
+    return 0;
+}
+
+int
 process_command(char command, unsigned int param, int pm)
 {
-	int val, ret;
-	static int currate = 5,
-		curpitch = 5;
-
-	DBG(5, "cmd: %c, param: %d, rel: %d", command, param, pm);
-	if (pm != 0)
-		pm *= param;
-
-	switch(command) {
-
-	case '@':  /* Reset speechd connection */
-		DBG(5, "resetting speech dispatcher connection");
-		spd_spk_reset(0);
+    int val, ret;
+    static int currate = 5,
+	curpitch = 5;
+    
+    DBG(5, "cmd: %c, param: %d, rel: %d", command, param, pm);
+    if (pm != 0)
+	pm *= param;
+    
+    switch(command) {
+	    
+    case '@':  /* Reset speechd connection */
+	DBG(5, "resetting speech dispatcher connection");
+	spd_spk_reset(0);
+	break;
+	
+    case 'b': /* set punctuation level */
+	switch(param){
+	case 0:
+	    DBG(5, "[punctuation all]", val);
+	    ret = spd_set_punctuation(conn, SPD_PUNCT_ALL);
+	    ret = spd_set_capital_letters(conn, SPD_CAP_SPELL);
+	    break;
+	case 1:
+	case 2:
+	    DBG(5, "[punctuation some]", val);
+	    ret = spd_set_punctuation(conn, SPD_PUNCT_SOME);
+	    break;
+	case 3:
+	    DBG(5, "[punctuation none]", val);
+	    ret = spd_set_punctuation(conn, SPD_PUNCT_NONE);
+	    break;
+	default: DBG(1, "ERROR: Invalid punctuation mode!");
+	}
+	if (ret == -1) DBG(1, "ERROR: Can't set punctuation mode");
+	break;
+	
+    case 'o': /* set voice */
+	switch(param)
+	    {
+	    case 0:
+		DBG(5, "[Voice MALE1]");
+		ret = spd_set_voice_type(conn, SPD_MALE1);
 		break;
-
-	case 'b': /* set punctuation level */
-		switch(param){
-		case 0:
-			DBG(5, "[punctuation all]", val);
-			ret = spd_set_punctuation(conn, SPD_PUNCT_ALL);
-			break;
-		case 1:
-		case 2:
-			DBG(5, "[punctuation some]", val);
-			ret = spd_set_punctuation(conn, SPD_PUNCT_SOME);
-			break;
-		case 3:
-			DBG(5, "[punctuation none]", val);
-			ret = spd_set_punctuation(conn, SPD_PUNCT_NONE);
-			break;
-		default: DBG(1, "ERROR: Invalid punctuation mode!");
-		}
-		if (ret == -1) DBG(1, "ERROR: Can't set punctuation mode");
+	    case 1:
+		DBG(5, "[Voice MALE2]");
+		ret = spd_set_voice_type(conn, SPD_MALE2);
 		break;
-
-	case 'o': /* set voice */
-		switch(param)
-		{
-		case 0:
-			DBG(5, "[Voice MALE1]");
-			ret = spd_set_voice_type(conn, SPD_MALE1);
-			break;
-		case 1:
-			DBG(5, "[Voice MALE2]");
-			ret = spd_set_voice_type(conn, SPD_MALE2);
-			break;
-		case 2:
-			DBG(5, "[Voice MALE3]");
-			ret = spd_set_voice_type(conn, SPD_MALE3);
-			break;
-		case 3:
-			DBG(5, "[Voice FEMALE1]");
-			ret = spd_set_voice_type(conn, SPD_FEMALE1);
-			break;
-		case 4:
-			DBG(5, "[Voice FEMALE2]");
-			ret = spd_set_voice_type(conn, SPD_FEMALE2);
-			break;
-		case 5:
-			DBG(5, "[Voice FEMALE3]");
-			ret = spd_set_voice_type(conn, SPD_FEMALE3);
-			break;
-		case 6:
-			DBG(5, "[Voice CHILD_MALE]");
-			ret = spd_set_voice_type(conn, SPD_CHILD_MALE);
-			break;
-		case 7:
-			DBG(5, "[Voice CHILD_FEMALE]");
-			ret = spd_set_voice_type(conn, SPD_CHILD_FEMALE);
-			break;
-		default:
-			DBG(1, "ERROR: Invalid voice %d!", param);
-			break;
-		}
-		if(ret == -1) DBG(1, "ERROR: Can't set voice!");
+	    case 2:
+		DBG(5, "[Voice MALE3]");
+		ret = spd_set_voice_type(conn, SPD_MALE3);
 		break;
-
-	case 'p': /* set pitch command */
-		if (pm) curpitch += pm;
-		else curpitch = param;
+	    case 3:
+		DBG(5, "[Voice FEMALE1]");
+		ret = spd_set_voice_type(conn, SPD_FEMALE1);
+		break;
+	    case 4:
+		DBG(5, "[Voice FEMALE2]");
+		ret = spd_set_voice_type(conn, SPD_FEMALE2);
+		break;
+	    case 5:
+		DBG(5, "[Voice FEMALE3]");
+		ret = spd_set_voice_type(conn, SPD_FEMALE3);
+		break;
+	    case 6:
+		DBG(5, "[Voice CHILD_MALE]");
+		ret = spd_set_voice_type(conn, SPD_CHILD_MALE);
+		break;
+	    case 7:
+		DBG(5, "[Voice CHILD_FEMALE]");
+		ret = spd_set_voice_type(conn, SPD_CHILD_FEMALE);
+		break;
+	    default:
+		DBG(1, "ERROR: Invalid voice %d!", param);
+		break;
+	    }
+	if(ret == -1) DBG(1, "ERROR: Can't set voice!");
+	break;
+	
+    case 'p': /* set pitch command */
+	if (pm) curpitch += pm;
+	else curpitch = param;
 		val = (curpitch - 5) * 20;
 		assert((val >= -100) && (val <= +100));
 		DBG(5, "[pitch %d, param: %d]", val, param);
 		ret = spd_set_voice_pitch(conn, val);
 		if (ret == -1) DBG(1, "ERROR: Can't set pitch!");
 		break;
-
-	case 's': /* speech rate */
-		if (pm) currate += pm;
-		else currate = param;
-		val = (currate * 22) - 100;
-		assert((val >= -100) && (val <= +100));
-		DBG(5, "[rate %d, param: %d]", val, param);
-		ret = spd_set_voice_rate(conn, val);
-		if (ret == -1) DBG(1, "ERROR: Invalid rate!");
-		break;
-
-	case 'f':
-	    DBG(3, "WARNING: [frequency setting not supported,"
-		"use rate instead]");
-	    break;
-
-	case 'v': 
-		DBG(3, "[volume setting not supported yet]");
-		break;
-
-	case 'x': 
-		DBG(3, "[tone setting not supported]");
-		break;
-	default:
-		DBG(3, "ERROR: [%c: this command is not supported]", command);
-	}
-
+		
+    case 's': /* speech rate */
+	if (pm) currate += pm;
+	else currate = param;
+	val = (currate * 22) - 100;
+	assert((val >= -100) && (val <= +100));
+	DBG(5, "[rate %d, param: %d]", val, param);
+	ret = spd_set_voice_rate(conn, val);
+	if (ret == -1) DBG(1, "ERROR: Invalid rate!");
+	break;
+	
+    case 'f':
+	DBG(3, "WARNING: [frequency setting not supported,"
+	    "use rate instead]");
+	break;
+	
+    case 'v': 
+	DBG(3, "[volume setting not supported yet]");
+	break;
+	
+    case 'x': 
+	DBG(3, "[tone setting not supported]");
+	break;
+    default:
+	DBG(3, "ERROR: [%c: this command is not supported]", command);
+    }
+    
 }
+
+/* Say a single character.
+
+UGLY HACK: Since currently this can either be a character
+encountered while moving the cursor, a single character generated
+by the application, I use the SSIP KEY command for it. KEY
+generally gives more information and gives better result
+for pressing keys. However, there might be some bad side-effects
+in the situations while the characters are generated by reding
+characters when moving with the cursor. It is currently impossible
+to distinguish KEYs from CHARacters in Speakup.
+*/
+void
+say_single_character(char *buf, size_t bytes, iconv_t *cd)
+{
+    char cmd[15];
+    char *cuu;
+    char *cu;
+    size_t in = 1, out = 8;
+    size_t enc_bytes;
+
+    assert(buf);
+    assert(cd);
+    
+    cuu = cu = malloc(9*sizeof(char));
+    DBG(5, "Saying single character. Input: |%s|", buf);
+    
+    enc_bytes = iconv(cd, (char**) &buf, &in, (char**) &cu, &out);
+    if (enc_bytes < 0){
+	DBG(5, "Couldn't recode this string. Failed.");
+	return;
+    }
+	
+    /* Put the null at the end of string */
+    *cu = 0;
+    
+    DBG(5, "Saying single character |%s|, %d", cuu);
+
+    /* It seems there is a bug in libspeechd function spd_say_char() */
+    {
+	snprintf(cmd, 14, "KEY %s", cuu);
+	DBG(5, "Saying single character CMD:|%s|", cmd);
+	spd_execute_command(conn, "SET SELF PRIORITY TEXT");
+	spd_execute_command(conn, cmd);
+    }
+
+    return;
+      
+}
+
 
 int
 parse_buf(char *buf, size_t bytes)
@@ -259,10 +355,41 @@ parse_buf(char *buf, size_t bytes)
 
   assert (bytes <= BUF_SIZE);
 
+  /* Initialize ICONV for charset conversion */
   cd = iconv_open("utf-8", SPEAKUP_CODING);
   if (cd == (iconv_t) -1)
       FATAL(1, "Requested character set conversion not possible"
 	    "by iconv: %s!", strerror(errno));
+
+  /* Look if the message only contains one character (characters=1) */
+  {
+        int characters = 0;
+	char *c;
+	DBG(5, "BUF:|%s|", buf);
+	/* Find the first non-whitespace non-controll character,
+	   make pointer _c_ point to it. If it is the only character
+	   in the string, _characters_ is 1, otherwise different. */
+	for (i=0; i<=bytes-1; i++){
+	    if (buf[i] != ' '){
+		c=buf+i;
+		characters++;
+		if (characters>1) break;
+	    }
+	    if ((unsigned) buf[i] < 32){
+		characters = -1; break;
+	    }
+
+	}
+
+	if (characters == 1){
+	    say_single_character(c, bytes-i, cd);
+	    iconv_close(cd);
+	    return 0;
+	} /* else continue parsing the buffer*/
+  }
+
+  /* This message contains more than one character. Possibly text and
+   embedded commands. */
 
   pi = buf;
   po = text;
@@ -290,7 +417,7 @@ parse_buf(char *buf, size_t bytes)
       {      
 	  /* If the digit is signed integer, read the sign.  We have
 	     to do it this way because +3, -3 and 3 seem to be three
-	     different thinks in this protocol */
+	     different things in this protocol */
 	  i++;
 	  if (buf[i] == '+') i++, pm = 1;
 	  else if (buf[i] == '-') i++, pm = -1;
@@ -526,9 +653,23 @@ main (int argc, char *argv[])
 
   ret = spd_set_data_mode(conn,SPD_DATA_SSML);
   if (ret){
-      DBG(1, "This version of Speech Dispatcher doesn't support SSML mode.\n"
+      DBG(1, "ERROR: This version of Speech Dispatcher doesn't support SSML mode.\n"
 	  "Please use a newer version of Speech Dispatcher (at least 0.5)");
       FATAL(6, "SSML not supported in Speech Dispatcher");
+  }
+
+  if (!DONT_INIT_TABLES){
+      ret = init_speakup_tables();
+      if (ret){
+	  DBG(1, "ERROR: It was not possible to init Speakup /proc tables for\n"
+	      "characters and character types."
+	      "This error might appear because you use an old version of speakup!"
+	      "If your instalation of Speakup is new:In order for internationalization\n"
+	      "or correct Speech Dispatcher support (like sound icons) to be\n"
+	      "working, you need to set each entry in /proc/speakup/characters\n"
+	      "except for space to its value and each entry in /proc/speakup/chartab"
+	      "which represents a valid speakable character to ALPHA.\n");
+      }
   }
 
   while (1){
