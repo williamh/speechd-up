@@ -18,7 +18,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: options.c,v 1.5 2005-08-03 13:00:59 hanke Exp $
+ * $Id: options.c,v 1.6 2006-04-23 20:43:54 hanke Exp $
  */
 
 #include <assert.h>
@@ -36,7 +36,7 @@ options_print_help(char *argv[])
     assert(argv);
     assert(argv[0]);
 
-    printf("Usage: %s [-{d|s}] [-l {1|2|3|4|5}] [-L=logfile] [-d=spk_device] | [-v] | [-h]\n", argv[0]);
+    printf("Usage: %s [-{d|s}] [-l {1|2|3|4|5}] [-L=logfile] [-c=encoding] | [-v] | [-h]\n", argv[0]);
     printf("SpeechD-Up -- Interface between Speech Dispatcher and SpeakUp (GNU GPL)\n\n");
     printf("-d, --run-daemon     -      Run as a daemon\n"
     "-s, --run-single     -      Run as single application\n"
@@ -44,6 +44,7 @@ options_print_help(char *argv[])
     "-L, --log-file       -      Set log file to path\n"
     "-D, --device         -      Specify the device name of Speakup software synthesis\n"
     "-c, --coding         -      Specify the default encoding to use\n"
+    "-t, --dont-init-tables -    Don't rewrite /proc tables for optimal software synthesis\n"
     "-p, --probe          -      Initialize everything and try to say some message\n"
     "                            but don't connect to SpeakUp. For testing purposes.\n"
     "-v, --version        -      Report version of this program\n"
@@ -77,6 +78,7 @@ options_set_default(void)
   SPEAKUP_DEVICE = (char*) strdup("/dev/softsynth");
   SPEAKUP_CODING = (char*) strdup("iso-8859-1");
   PROBE_MODE = 0;
+  DONT_INIT_TABLES=0;
 }
 
 void
@@ -130,6 +132,9 @@ options_parse(int argc, char *argv[])
 	break;
     case 'p':
 	PROBE_MODE = 1;
+	break;
+    case 't':
+	DONT_INIT_TABLES = 1;
 	break;
     default:
       printf("Error: Unrecognized option\n\n");
