@@ -18,7 +18,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: options.h,v 1.6 2005-08-03 13:05:16 hanke Exp $
+ * $Id: options.h,v 1.7 2006-04-23 20:44:07 hanke Exp $
  */
 
 #include <getopt.h>
@@ -40,6 +40,7 @@ char *SPEAKUP_DEVICE;
 char *SPEAKUP_CODING;
 
 int PROBE_MODE;
+int DONT_INIT_TABLES;
 
 static struct option spd_long_options[] = {
     {"run-daemon", 0, 0, 'd'},
@@ -49,10 +50,11 @@ static struct option spd_long_options[] = {
     {"device", 1, 0, 'D'},
     {"coding", 1, 0, 'c'},
     {"synthesis", 1, 0, 'S'},
+    {"dont-init-tables", 0, 0, 't'},
     {"probe", 0, 0, 'p'},
     {"version", 0, 0, 'v'},
     {"help", 0, 0, 0},
     {0, 0, 0, 0}
 };
 
-static char* spd_short_options = "dsvhpl:L:D:S:c:";
+static char* spd_short_options = "dsvhptl:L:D:S:c:";
