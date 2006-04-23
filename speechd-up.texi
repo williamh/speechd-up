@@ -40,7 +40,7 @@ Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU General Public License as published by the
 Free Software Foundation; either version 2 of the License, or (at your
 option) any later version. A copy of the license is included in the
-section entitled ``GNU General Public License''
+section entitled ``GNU General Public License''.
 @end quotation
 
 @end titlepage
@@ -48,7 +48,7 @@ section entitled ``GNU General Public License''
 @ifnottex
 @node Top, Installing, (dir), (dir)
 
-This manual documents SpeechD-Up, version 0.3.
+This manual documents SpeechD-Up, version 0.4.
 
 Copyright @copyright{} 2005, 2006 Brailcom, o.p.s.
 
@@ -265,18 +265,18 @@ Dispatcher and then adding a link to it to
 If this doesn't work, please test again if all the components work well
 as described above.
 
-@item It's very slow etc...
+@item It's somehow slow etc...
 
 You might find the new software synthesis is rather slow with SpeakUp
 compared to the hardware synthesizers, and they have some other
-deficiencies. This is not a fault of Speech Dispatcher or software
-synthesis in general. It might be the fault of your software
-synthesizer, but most probably (as with Festival and others), it's
-because of the way SpeakUp does interfacing to software synthesis.
-SpeakUp was not formerly designed to interface with software synthesis
-and neither now this is its main focus. Please don't think software
-synthesis is inferior to hardware synthesis because of this. See
-@ref{Problems}
+deficiencies. On today's hardware, this is not a fault of Speech Dispatcher
+or software synthesis in general. Speakup was not formerly designed
+with software synthesis in mind and neither now this is its main focus.
+Please don't think software synthesis is generally inferior to hardware
+synthesis because of this. We actually believe quite the opposite
+is true: The hardware synthesizer, unless they are programable, will
+never achieve the huge possibilities of extensible software synthesizers.
+See @ref{Problems}
 
 @end enumerate
 
@@ -298,10 +298,24 @@ Specifies the path to the file where logs are stored.
 @item -D or --device
 Selects the device where Speakup sends it's output.
 @item -c or --coding
-Indicates which character coding Speakup uses. For possible values, please see `iconv --list'
+Indicates which character coding your console uses. For possible
+values, please see `iconv --list'. This option is important if your
+console is not in iso-8859-1! (It doesn't work with ``utf-8'' and
+other multibyte encoding because of kernel related issues with this
+encoding. You must run your console in a unibyte encoding like for
+example one of the ``iso-8859-*'' set, sorry.)
+@item -t or --dont-init-tables
+SpeechD-Up tries to init some Speakups /proc tables on its start. Most important, it
+changes /proc/characters and /proc/chartab so that punctuation, capital letters recognition
+and various other language dependent things are handled inside Speech Dispatcher and
+in the synthesizer. This is crucial for internationalization. You can however disable
+this if you want to modify the tables manually for some reason and don't like
+speechd-up overwriting them. (Do not expect Speakup to work for other languages than
+English in that case, unless you know what you are doing and can do the necessary
+changes manually.)
 @item -p or --probe
 Runs SpeechD-Up in the probe mode. This means that SpeechD-Up will do
-everythingas as ordinary, but won't try to open the SpeakUp device. It
+everything as as ordinary, but won't try to open the SpeakUp device. It
 just speaks a message and terminates (indicating so in the
 logfiles). This is meant for testing.
 @item -v or --version
@@ -312,13 +326,11 @@ Print a short help.
 
 Examples:
 
-
 If the device where Speakup talks to userspace is @code{/dev/sftsyn2}
-and the input is in @code{utf-8}, then you can use (this doesn't
-actually work now, see the section @ref{Problems}):
+and your console is in @code{iso-8859-2}, then you can use:
 
 @example
-speechd-up --device="/dev/sftsyn2/" --coding "utf-8"
+speechd-up --device="/dev/sftsyn2/" --coding "iso-8859-2"
 @end example
 
 Please use this for debugging or sending bug-reports
@@ -329,29 +341,59 @@ speechd-up -s -l 5 -L "/tmp/speechd-up.log"
 @node Problems, Contact and Reporting Bugs, Invoking, Top
 @chapter Problems
 
-There are many known problems with Speakup/SpeechD-Up. You might want to
-consider using some user-space assistive technologies if you want to use
-software synthesis. Such technologies are speechd-el, Emacspeak, SuSE
-Blinux and Yasr.
+There are many known problems with Speakup/SpeechD-Up. You might want
+to consider using some user-space assistive technologies if you want
+to use software synthesis on the console. Such technologies are
+speechd-el, Emacspeak, SuSE Blinux and Yasr. We however believe the
+Speakup/SpeechD-Up combination is useful even though it has the
+described deficiencies.
 
 @itemize
 
-@item Reading keys/characters is slow
+@item (Fixed: Speaking characters and keys is slow)
 
-The way Speakup passes individual characters after the user types them on the
-screen makes it impossible to tell these are individual characters typed by the
-user and so no caching mechanisms are used in Speech Dispatcher and everything
-is synthesized like an ordinary text.
+The original issue was fixed (but see bellow). If you are still
+not happy with the performance while reading characters and typing
+in, then you are using a synthesizer which is both slow
+and lacking support for caching (use Festival, it does caching
+with Speech Dispatcher and keys reading is instant).
 
-Worse, spaces appearing around single characters as received by Speakup make
-some synthesizers add additional delays into the resulting sound.
+@item Characters behave like KEYS for synthesizer configuration
 
-@item It doesn't speak my language / it uses some weird character set
+The way Speakup passes individual characters makes it impossible
+to tell whether this character originated as a key or while
+the user was moving the cursor on the screen and the already
+present letters are being read. We believe it is important
+to carry the proper information when pressing keys (like
+capitalization), so SpeechD-Up handles these messages
+as keys.
 
-Speakup currently only supports English. You can make a try with
-	speechd-up -c <character-set>
-but if you don't succeed, it's better to give it up (unless you want
-to contribute to Speakup's developement).
+Also space, tab and various other whitespace characters are
+not reported as a characters/keys as this is impossible to achieve
+with current Speakups implementation. It is impossible if the
+word ``space'' in input originated by the user pressing the SPACE
+key or by encountering this word inside a document being read on
+the screen.
+
+@item (Fixed: It doesn't speak my language / it uses some weird character set)
+
+If you still experience this issue, you are probably doing one of this
+
+@itemize
+@item
+Using a wide character encoding like UTF-8. This is not supported
+for inherent issues with wide characters inside the kernel.
+
+@item
+Not running @code{speechd-up} with the @code{-c} parameter and specifying
+the proper character set your console uses.
+
+@item
+Running @code{speechd-up} with the @code{-t} or @code{--dont-init-tables}.
+This option is incompatible with internationalization.
+@end itemize
+
+If this is not true, please contact us on @email{speechd@@bugs.freebsoft.org}.
 
 @item The spelling/punctuation modes of my favorite synthesizer don't work.
 
@@ -366,7 +408,12 @@ UTF-8 in any way (nor it can, there is no UTF-8 support inside the
 kernel -- just workarounds targeted at visuall interpretation; the
 kernel virtual terminal drivers contain many barriers for accessibility).
 
-@item I can't switch synthesizers on fly
+@item Punctuation and capital letters recognition doesn't properly work
+
+This is an issue again related to Speakups design. It is currently
+being worked on.
+
+@item I can't switch languages or synthesizers on fly
 
 The way the interface Speakup -- Speech Dispatcher is designed, this is not
 possible.  You can switch them statically in Speech Dispatcher's configuration
@@ -374,19 +421,21 @@ though. If you use SpeakUp's identification "*:speechd-up:*" you can even
 choose a synthesizer specifically for Speakup.
 
 @item Any other more advanced thing doesn't work or something is too slow or ...
-There are many problems with how this interface is done and with how Speakup is
-designed. It's probably much better to use Speakup with a hardware synthesizer,
-if you have the possibility. Speakup was not designed with user space software
-synthesis in mind and the necessary changes would probably be too difficult
-now. There were many important design decisions made which are very reasonable
-for hardware synthesizers, but they just don't mix well with software
-synthesis.
+There are many problems for software speech with how this interface is
+done and with how Speakup is designed. It's probably still better to
+use Speakup with a hardware synthesizer, if you have the
+possibility. Speakup was not designed with user space software
+synthesis in mind and the necessary changes would probably be too
+difficult now. There were many important design decisions made which
+are very reasonable for hardware synthesizers, but they just don't mix
+well with software synthesis.
 
-On the other hand, experience shows people still find this interface to
-software speech synthesis useful, mostly because of lack of anything
-else. That's the reason why we provide this application and we will try to help
-you if you have problems or questions.
-
+On the other hand, experience shows people still find this interface
+to software speech synthesis useful, mostly because of lack of
+anything else. Also, it seems the future of accessibility technologies
+lies in the software synthesis (extensible, etc.) as machines get
+faster. That's the reason why we provide this application and we will
+try to help you if you have problems or questions.
 @end itemize
 
 
@@ -435,7 +484,7 @@ highly appreciated. You can report bugs in SpeechD-Up on
 @item
 @emph{Help us with project:} Please look at
 @uref{http://www.freebsoft.org/} to find information about our
-projects. There is a plenty of work to be done for the blind and
+projects. There is a plenty of work still to be done for the blind and
 visually impaired people to make their work with computers easier.
 
 @item
