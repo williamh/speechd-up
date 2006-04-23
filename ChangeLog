@@ -1,3 +1,16 @@
+2006-04-23  Hynek Hanke  <hanke@chopin>
+
+	* speechd-up.c (init_speakup_tables): New function. Thanks to Gilles Casse.
+	(say_single_character): New function.
+	(parse_buf): Use say_single_character when the message only contains one
+	character.
+	(main): perform init_speakup_tables() if speechd-up is issued without -t option.
+
+	* speechd-up.texi: Updated. Internationalization issues fixed. New -t command.
+	Single characters/keys reading partially fixed.
+
+	* options.c: Added new option -t.
+
 2006-01-25  Hynek Hanke  <hanke@chopin>
 
 	* version.sh (VERSION): 0.3 release.

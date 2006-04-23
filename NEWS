@@ -1,4 +1,14 @@
 
+Version 0.4
+
+  * Internationalization finally works!
+	(Requires newer versions of Speakup).
+	Thanks to Gilles Casse!
+
+  * Reading single characters and keys will now be faster,
+    configurable (Speech Dispatcher KEY event) and support
+    sound icons on more advanced synthesizers (Festivival, ...)
+ 
 
 Version 0.3
 
