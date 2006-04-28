@@ -1,3 +1,7 @@
+2006-04-28  Hynek Hanke  <hanke@chopin>
+
+	* speechd-up.c (say_single_character): Free cuu.
+
 2006-04-23  Hynek Hanke  <hanke@chopin>
 
 	* speechd-up.c (init_speakup_tables): New function. Thanks to Gilles Casse.
