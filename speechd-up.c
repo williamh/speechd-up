@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.11 2006-04-23 20:46:27 hanke Exp $
+ * $Id: speechd-up.c,v 1.12 2006-04-28 11:45:30 hanke Exp $
  */
 
 #include <stdio.h>
@@ -305,11 +305,15 @@ say_single_character(char *buf, size_t bytes, iconv_t *cd)
     assert(cd);
     
     cuu = cu = malloc(9*sizeof(char));
+    if (cuu == NULL) FATAL(4, "Can't allocate memmory.");
+
+
     DBG(5, "Saying single character. Input: |%s|", buf);
     
     enc_bytes = iconv(cd, (char**) &buf, &in, (char**) &cu, &out);
     if (enc_bytes < 0){
 	DBG(5, "Couldn't recode this string. Failed.");
+	free(cuu);
 	return;
     }
 	
@@ -326,6 +330,7 @@ say_single_character(char *buf, size_t bytes, iconv_t *cd)
 	spd_execute_command(conn, cmd);
     }
 
+    free(cuu);
     return;
       
 }
