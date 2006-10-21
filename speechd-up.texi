@@ -19,7 +19,7 @@
 @page
 @vskip 0pt plus 1filll
 
-This manual documents SpeechD-Up, version 0.3.
+This manual documents SpeechD-Up, version 0.4.
 
 Copyright @copyright{} 2005,2006 Brailcom, o.p.s.
 
@@ -405,7 +405,7 @@ doesn't allow the TTS to use it's own user-specified rules.
 UTF-8 should work as long as you only use characters encountered in the
 basic ASCII. So English should work. But Speakup doesn't really support
 UTF-8 in any way (nor it can, there is no UTF-8 support inside the
-kernel -- just workarounds targeted at visuall interpretation; the
+kernel -- just workarounds targeted at visual interpretation; the
 kernel virtual terminal drivers contain many barriers for accessibility).
 
 @item Punctuation and capital letters recognition doesn't properly work
