@@ -2,7 +2,7 @@
 /*
  * speechd-up.c - Simple interface between SpeakUp and Speech Dispatcher
  *
- * Copyright (C) 2004 Brailcom, o.p.s.
+ * Copyright (C) 2004, 2006 Brailcom, o.p.s.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.12 2006-04-28 11:45:30 hanke Exp $
+ * $Id: speechd-up.c,v 1.13 2006-10-21 15:55:56 hanke Exp $
  */
 
 #include <stdio.h>
@@ -668,7 +668,7 @@ main (int argc, char *argv[])
       if (ret){
 	  DBG(1, "ERROR: It was not possible to init Speakup /proc tables for\n"
 	      "characters and character types."
-	      "This error might appear because you use an old version of speakup!"
+	      "This error might appear because you use an old version of Speakup!"
 	      "If your instalation of Speakup is new:In order for internationalization\n"
 	      "or correct Speech Dispatcher support (like sound icons) to be\n"
 	      "working, you need to set each entry in /proc/speakup/characters\n"
