@@ -3,10 +3,10 @@ The requirements:
 
 You will need these components to compile and run speechd-up: 
  - Speech Dispatcher (http://www.freebsoft.org)
-     (including libspeechd.so.2 or newer -- part of Speech Dispatcher 0.6)
+     (including libspeechd.so.2 or newer -- part of Speech Dispatcher 0.6 or 0.6.1)
  - Speakup (http://www.linux-speakup.org)
 	(you need to install a newer version if you want to make
-	use of the Read All command)
+	use of the Read All command and internationalization)
  - texinfo (you can live without it if you use just `make speechd-up', but
 	you won't have the documentation installed)
 
@@ -22,15 +22,15 @@ Building SpeechD-Up:
 Please read the file BUGS first so that you are aware of the possible
 issues.
 
-! You need to upgrade to Speech Dispatcher 0.6 before trying to compile
-and install this version of SpeechD-Up !
+! You need to upgrade to Speech Dispatcher 0.6 or 0.6.1 before trying to
+compile and install this version of SpeechD-Up !
 
-To compile the SpeechD-Up, simply extract the distribution archive and
-change to speechd-<version> directory and run "make all" command as
+To compile SpeechD-Up, simply extract the distribution archive and
+change to speechd-up-0.4 directory and run "make all" command as
 follows:
 
- $ tar -xzvf speechd-up-@VERSION.tar.gz
- $ cd speechd-up-@VERSION
+ $ tar -xzvf speechd-up-0.4.tar.gz
+ $ cd speechd-up-0.4
 
 Only *if you are building from CVS*, you must run buid.sh
 
@@ -46,7 +46,7 @@ Proceed like ordinary
  $ ./configure
  $ make all
 
-If everything worked ok, you can install all the parts to the default
+If everything worked right, you can install all the parts to the default
 path by running (as root):
 
  $ make install
@@ -54,7 +54,7 @@ path by running (as root):
 Making SpeakUp work with SpeechdUp and software synthesis
 =========================================================
 
-Please see the info documentation you obtained with SpeechD-Up for this
+Please see the info documentation you obtained with SpeechD-Up
 (info speechd-up) or go to http://www.freebsoft.org/doc/speechd-up .
 
 Testing
