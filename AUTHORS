@@ -11,6 +11,15 @@ AUTHORS
 * Jan Buchal <buchal@freebsoft.org>
 	Ideas
 
+CONTRIBUTORS
+============
+
+* Michael McDonalds
+	Index marking and the Read All command support.
+
+* Gilles Casse
+	Internationalization.
+
 THANKS
 ======
 
