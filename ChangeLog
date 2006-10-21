@@ -1,3 +1,17 @@
+2006-10-21  Hynek Hanke  <hanke@brailcom.org>
+
+	* speechd-up.texi: Typo.
+
+	* speechd-up.c: Copyright 2006.
+
+	* AUTHORS: New section CONTRIBUTORS. Added Micheal McDonalds and Gilles Casse.
+
+	* version.sh: 0.4
+
+	* INSTALL: 0.4
+
+	* ANNOUNCE: Internationalization and key events.
+
 2006-04-28  Hynek Hanke  <hanke@chopin>
 
 	* speechd-up.c (say_single_character): Free cuu.

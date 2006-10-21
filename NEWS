@@ -1,14 +1,17 @@
 
+
 Version 0.4
 
-  * Internationalization finally works!
-	(Requires newer versions of Speakup).
-	Thanks to Gilles Casse!
+ * Internationalization for all unibyte encodings! It is now possible to use
+   Speakup with different languages, as long as the written form is representable
+   in a unibyte (e.g. iso-8859-) encoding and the language is supported by your
+   synthesizer. Please see the documentation.
+	(thanks to Gilles Casse)
 
-  * Reading single characters and keys will now be faster,
-    configurable (Speech Dispatcher KEY event) and support
-    sound icons on more advanced synthesizers (Festivival, ...)
- 
+ * Keys and characters typed by the user are now a separate event for Speech
+   Dispatcher. This allows the various synthesizers to do caching, their own
+   language appropriate punctuation and capital letters handling. Also sound
+   icons for letters and symbols are now supported. 
 
 Version 0.3
 
