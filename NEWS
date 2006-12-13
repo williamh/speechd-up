@@ -1,4 +1,8 @@
 
+Version 0.5
+ * Static text-based configuration file in etc/ .
+ * It is now possible to switch languages when executing speechd-up.
+
 
 Version 0.4
 
