@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.13 2006-10-21 15:55:56 hanke Exp $
+ * $Id: speechd-up.c,v 1.14 2006-12-13 18:01:35 hanke Exp $
  */
 
 #include <stdio.h>
@@ -31,12 +31,14 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <signal.h>
+
 #include <iconv.h>
-
 #include <libspeechd.h>
+#include <dotconf.h>
 
-
+#include "log.h"
 #include "options.h"
+#include "configuration.h"
 
 #define BUF_SIZE 1024
 
@@ -48,60 +50,19 @@ fd_set fd_list;
 fd_set fd_write;
 SPDConnection *conn;
 
-FILE *logfile;
-
 char *spd_spk_pid_file;
 
 void spd_spk_reset(int sig);
 
 void
-DBG(int level, char *format, ...)
-{
-  assert(format != NULL);
-  assert(logfile != NULL);
-
-  if(level <= LOG_LEVEL) {
-    va_list args;
-    int i;
-		
-    va_start(args, format);
-    {
-	{
-	/* Print timestamp */
-	time_t t;
-	char *tstr;
-	t = time(NULL);
-	tstr = (char*) strdup(ctime(&t));
-	if (tstr == NULL){
-	    fprintf(stderr, "strdup(ctime) failed, can't log");
-	    return;
-	}
-	/* Remove the trailing \n */
-	assert(strlen(tstr)>1);
-	tstr[strlen(tstr)-1] = 0;
-	fprintf(logfile, "[%s] speechd: ", tstr);
-	free(tstr);
-      }
-      for(i=1;i<level;i++){
-	fprintf(logfile, " ");
-      }
-      vfprintf(logfile, format, args);
-      fprintf(logfile, "\n");
-      fflush(logfile);
-    }
-    va_end(args);
-  }				
-}
-
-void
 index_marker_callback(size_t msg_id, size_t client_id, SPDNotificationType type,
 		      char *index_mark)
 {
-  DBG(5,"Index Mark Callback");
-  int cw = write(fd, index_mark, sizeof(index_mark));
+    //LOG(5,"Index Mark Callback");
+    if (index_mark != NULL){
+	int cw = write(fd, index_mark, sizeof(index_mark));
+    }
 }
-
-#define FATAL(status, format...) { DBG(0, format); exit(status); }
 
 void
 speechd_init()
@@ -110,7 +71,9 @@ speechd_init()
   if (conn == 0) FATAL(1, "ERROR! Can't connect to Speech Dispatcher!");
   conn->callback_im=index_marker_callback;
   if (spd_set_notification_on(conn, SPD_INDEX_MARKS )==-1)
-	DBG(1,"Error turning on Index Mark Callback");
+	LOG(1,"Error turning on Index Mark Callback");
+  if (options.language_set != DEFAULT)
+      spd_set_language(conn, options.language);
 }
 
 void
@@ -169,78 +132,78 @@ process_command(char command, unsigned int param, int pm)
     static int currate = 5,
 	curpitch = 5;
     
-    DBG(5, "cmd: %c, param: %d, rel: %d", command, param, pm);
+    LOG(5, "cmd: %c, param: %d, rel: %d", command, param, pm);
     if (pm != 0)
 	pm *= param;
     
     switch(command) {
 	    
     case '@':  /* Reset speechd connection */
-	DBG(5, "resetting speech dispatcher connection");
+	LOG(5, "resetting speech dispatcher connection");
 	spd_spk_reset(0);
 	break;
 	
     case 'b': /* set punctuation level */
 	switch(param){
 	case 0:
-	    DBG(5, "[punctuation all]", val);
+	    LOG(5, "[punctuation all]", val);
 	    ret = spd_set_punctuation(conn, SPD_PUNCT_ALL);
 	    ret = spd_set_capital_letters(conn, SPD_CAP_SPELL);
 	    break;
 	case 1:
 	case 2:
-	    DBG(5, "[punctuation some]", val);
+	    LOG(5, "[punctuation some]", val);
 	    ret = spd_set_punctuation(conn, SPD_PUNCT_SOME);
 	    break;
 	case 3:
-	    DBG(5, "[punctuation none]", val);
+	    LOG(5, "[punctuation none]", val);
 	    ret = spd_set_punctuation(conn, SPD_PUNCT_NONE);
 	    break;
-	default: DBG(1, "ERROR: Invalid punctuation mode!");
+	default: LOG(1, "ERROR: Invalid punctuation mode!");
 	}
-	if (ret == -1) DBG(1, "ERROR: Can't set punctuation mode");
+	if (ret == -1) LOG(1, "ERROR: Can't set punctuation mode");
 	break;
 	
     case 'o': /* set voice */
 	switch(param)
 	    {
 	    case 0:
-		DBG(5, "[Voice MALE1]");
+		LOG(5, "[Voice MALE1]");
 		ret = spd_set_voice_type(conn, SPD_MALE1);
 		break;
 	    case 1:
-		DBG(5, "[Voice MALE2]");
+		LOG(5, "[Voice MALE2]");
 		ret = spd_set_voice_type(conn, SPD_MALE2);
 		break;
 	    case 2:
-		DBG(5, "[Voice MALE3]");
+		LOG(5, "[Voice MALE3]");
 		ret = spd_set_voice_type(conn, SPD_MALE3);
 		break;
 	    case 3:
-		DBG(5, "[Voice FEMALE1]");
+		LOG(5, "[Voice FEMALE1]");
 		ret = spd_set_voice_type(conn, SPD_FEMALE1);
 		break;
 	    case 4:
-		DBG(5, "[Voice FEMALE2]");
+		LOG(5, "[Voice FEMALE2]");
 		ret = spd_set_voice_type(conn, SPD_FEMALE2);
 		break;
 	    case 5:
-		DBG(5, "[Voice FEMALE3]");
+		LOG(5, "[Voice FEMALE3]");
 		ret = spd_set_voice_type(conn, SPD_FEMALE3);
 		break;
 	    case 6:
-		DBG(5, "[Voice CHILD_MALE]");
+		LOG(5, "[Voice CHILD_MALE]");
 		ret = spd_set_voice_type(conn, SPD_CHILD_MALE);
 		break;
 	    case 7:
-		DBG(5, "[Voice CHILD_FEMALE]");
+		LOG(5, "[Voice CHILD_FEMALE]");
 		ret = spd_set_voice_type(conn, SPD_CHILD_FEMALE);
 		break;
 	    default:
-		DBG(1, "ERROR: Invalid voice %d!", param);
+		LOG(1, "ERROR: Invalid voice %d!", param);
 		break;
 	    }
-	if(ret == -1) DBG(1, "ERROR: Can't set voice!");
+	if(ret == -1) LOG(1, "ERROR: Can't set voice!");
 	break;
 	
     case 'p': /* set pitch command */
@@ -248,9 +211,9 @@ process_command(char command, unsigned int param, int pm)
 	else curpitch = param;
 		val = (curpitch - 5) * 20;
 		assert((val >= -100) && (val <= +100));
-		DBG(5, "[pitch %d, param: %d]", val, param);
+		LOG(5, "[pitch %d, param: %d]", val, param);
 		ret = spd_set_voice_pitch(conn, val);
-		if (ret == -1) DBG(1, "ERROR: Can't set pitch!");
+		if (ret == -1) LOG(1, "ERROR: Can't set pitch!");
 		break;
 		
     case 's': /* speech rate */
@@ -258,25 +221,25 @@ process_command(char command, unsigned int param, int pm)
 	else currate = param;
 	val = (currate * 22) - 100;
 	assert((val >= -100) && (val <= +100));
-	DBG(5, "[rate %d, param: %d]", val, param);
+	LOG(5, "[rate %d, param: %d]", val, param);
 	ret = spd_set_voice_rate(conn, val);
-	if (ret == -1) DBG(1, "ERROR: Invalid rate!");
+	if (ret == -1) LOG(1, "ERROR: Invalid rate!");
 	break;
 	
     case 'f':
-	DBG(3, "WARNING: [frequency setting not supported,"
+	LOG(3, "WARNING: [frequency setting not supported,"
 	    "use rate instead]");
 	break;
 	
     case 'v': 
-	DBG(3, "[volume setting not supported yet]");
+	LOG(3, "[volume setting not supported yet]");
 	break;
 	
     case 'x': 
-	DBG(3, "[tone setting not supported]");
+	LOG(3, "[tone setting not supported]");
 	break;
     default:
-	DBG(3, "ERROR: [%c: this command is not supported]", command);
+	LOG(3, "ERROR: [%c: this command is not supported]", command);
     }
     
 }
@@ -308,11 +271,11 @@ say_single_character(char *buf, size_t bytes, iconv_t *cd)
     if (cuu == NULL) FATAL(4, "Can't allocate memmory.");
 
 
-    DBG(5, "Saying single character. Input: |%s|", buf);
+    LOG(5, "Saying single character. Input: |%s|", buf);
     
     enc_bytes = iconv(cd, (char**) &buf, &in, (char**) &cu, &out);
     if (enc_bytes < 0){
-	DBG(5, "Couldn't recode this string. Failed.");
+	LOG(5, "Couldn't recode this string. Failed.");
 	free(cuu);
 	return;
     }
@@ -320,12 +283,12 @@ say_single_character(char *buf, size_t bytes, iconv_t *cd)
     /* Put the null at the end of string */
     *cu = 0;
     
-    DBG(5, "Saying single character |%s|, %d", cuu);
+    LOG(5, "Saying single character |%s|", cuu);
 
     /* It seems there is a bug in libspeechd function spd_say_char() */
     {
 	snprintf(cmd, 14, "KEY %s", cuu);
-	DBG(5, "Saying single character CMD:|%s|", cmd);
+	LOG(5, "Saying single character CMD:|%s|", cmd);
 	spd_execute_command(conn, "SET SELF PRIORITY TEXT");
 	spd_execute_command(conn, cmd);
     }
@@ -361,7 +324,7 @@ parse_buf(char *buf, size_t bytes)
   assert (bytes <= BUF_SIZE);
 
   /* Initialize ICONV for charset conversion */
-  cd = iconv_open("utf-8", SPEAKUP_CODING);
+  cd = iconv_open("utf-8", options.speakup_coding);
   if (cd == (iconv_t) -1)
       FATAL(1, "Requested character set conversion not possible"
 	    "by iconv: %s!", strerror(errno));
@@ -370,7 +333,7 @@ parse_buf(char *buf, size_t bytes)
   {
         int characters = 0;
 	char *c;
-	DBG(5, "BUF:|%s|", buf);
+	LOG(5, "BUF:|%s|", buf);
 	/* Find the first non-whitespace non-controll character,
 	   make pointer _c_ point to it. If it is the only character
 	   in the string, _characters_ is 1, otherwise different. */
@@ -409,7 +372,7 @@ parse_buf(char *buf, size_t bytes)
       if (buf[i] == DTLK_STOP)
 	{
 	  spd_cancel(conn);
-	  DBG(5, "[stop]");
+	  LOG(5, "[stop]");
 	  pi = &(buf[i+1]);
 	  //po = text;
           strcpy(text,start_tag);
@@ -440,7 +403,7 @@ parse_buf(char *buf, size_t bytes)
 
 	  if (cmd_type=='i')
 	  {
-		DBG(5, "Insert Index %d",param);
+		LOG(5, "Insert Index %d",param);
 		sprintf(helper,"<mark name=\"%d\"/>",param);
 		strcpy(po,helper);
 	 	 pi = &(buf[i+1]);
@@ -452,8 +415,8 @@ parse_buf(char *buf, size_t bytes)
             /* If there is some text before this command, say it */
             if (m > 0)
             {
-              DBG(5, "text: |%s|", text);
-              DBG(5, "[speaking (2)]");
+              LOG(5, "text: |%s|", text);
+              LOG(5, "[speaking (2)]");
               strcat(text,end_tag);
               spd_say(conn, SPD_MESSAGE, text);
               m = 0;
@@ -472,7 +435,7 @@ parse_buf(char *buf, size_t bytes)
 	     buffer for later synthesis. */
 	  in_bytes = 1;
 	  enc_bytes = iconv(cd, &pi, &in_bytes, &po, &bytes_left);
-	  if (enc_bytes == -1) DBG(1,"unknown character in input"); /*;*/
+	  if (enc_bytes == -1) LOG(1,"unknown character in input"); /*;*/
 	  else{
 	    m++;
 	    *po = 0;
@@ -487,10 +450,10 @@ parse_buf(char *buf, size_t bytes)
 
   if (m != 0){
     strcpy(po,end_tag);  
-    DBG(5,"text: |%s %d|", text, m);
-    DBG(5, "[speaking]");
+    LOG(5,"text: |%s %d|", text, m);
+    LOG(5, "[speaking]");
     spd_say(conn, SPD_MESSAGE, text);
-    DBG(5,"---");
+    LOG(5,"---");
   }
 
   return 0;
@@ -499,7 +462,7 @@ parse_buf(char *buf, size_t bytes)
 void
 spd_spk_terminate(int sig)
 {
-  DBG(1, "Terminating...");
+  LOG(1, "Terminating...");
   /* TODO: Resolve race  */
   speechd_close();
   close(fd);
@@ -579,6 +542,28 @@ destroy_pid_file()
     unlink(spd_spk_pid_file);
 }
 
+void
+load_configuration(void)
+{
+    char *configfilename = SYS_CONF"/speechd-up.conf";
+    configfile_t *configfile = NULL;
+    int dc_num_options = 0;
+    configoption_t *dc_options = NULL;
+
+    /* Load new configuration */
+    dc_options = load_config_options(&dc_num_options);
+    
+    configfile = dotconf_create(configfilename, dc_options,
+				0, CASE_INSENSITIVE);
+    if (!configfile) FATAL (-1, "Error opening config file\n");
+    if (dotconf_command_loop(configfile) == 0)
+	FATAL(-1, "Error reading config file\n");
+    dotconf_cleanup(configfile);
+
+    free_config_options(dc_options, &dc_num_options);
+    LOG(1,"Configuration has been read from \"%s\"", configfilename);
+}
+
 
 int
 main (int argc, char *argv[])
@@ -598,15 +583,20 @@ main (int argc, char *argv[])
   
   if (create_pid_file() == -1) exit(1);
 
+  logfile = stdout;
+  load_configuration();
 
-  logfile = fopen(LOG_FILE_NAME, "w+");
+  logfile = fopen(options.log_file_name, "w+");
   if (logfile == NULL){
-    fprintf(stderr, "ERROR: Can't open logfile in %s! Wrong permissions?\n", LOG_FILE_NAME);
+    fprintf(stderr, "ERROR: Can't open logfile in %s! Wrong permissions?\n",
+	    options.log_file_name);
     exit(1);
   }
 
+  printf("DD:%d:DD", options.language_set);
+
   /* Fork, set uid, chdir, etc. */
-  if (SPD_SPK_MODE == MODE_DAEMON){
+  if (options.spd_spk_mode == MODE_DAEMON){
     daemon(0,0);	   
     /* Re-create the pid file under this process */
     destroy_pid_file();
@@ -617,23 +607,23 @@ main (int argc, char *argv[])
   (void) signal(SIGINT, spd_spk_terminate);	
   (void) signal(SIGHUP, spd_spk_reset);
 
-  DBG(1,"Speechd-speakup starts!");
+  LOG(1,"Speechd-speakup starts!");
 
-  if (!PROBE_MODE){
-      if ((fd = open(SPEAKUP_DEVICE, O_RDWR)) < 0) {
-	  DBG(1,"Error while openning the device in read/write mode %d,%s",
+  if (!options.probe_mode){
+      if ((fd = open(options.speakup_device, O_RDWR)) < 0) {
+	  LOG(1,"Error while openning the device in read/write mode %d,%s",
 	      errno,strerror(errno));
-	  DBG(1,"Trying to open the device in the old way.");
-	  if ((fd = open(SPEAKUP_DEVICE, O_RDONLY)) < 0) {
-	      DBG(1,"Error while openning the device in read mode %d,%s",
+	  LOG(1,"Trying to open the device in the old way.");
+	  if ((fd = open(options.speakup_device, O_RDONLY)) < 0) {
+	      LOG(1,"Error while openning the device in read mode %d,%s",
 		  errno,strerror(errno));
 	      FATAL(2, "ERROR! Unable to open soft synth device (%s)\n",
-		    SPEAKUP_DEVICE);
+		    options.speakup_device);
 	      return -1;
 	  }else{
-	      DBG(1,"It seems you are using an older version of Speakup "
+	      LOG(1,"It seems you are using an older version of Speakup "
 		  "that doesn't support index marking. This is not a problem "
-		  "but some more advanced Speakup's function might not work "
+		  "but some more advanced functions of Speakup might not work "
 		  "until you upgrade Speakup.");
 	  }
 	  
@@ -646,27 +636,27 @@ main (int argc, char *argv[])
 
   speechd_init();
 
-  if (PROBE_MODE){
-      DBG(1, "This is just a probe mode. Not trying to read Speakup's device.\n");     
-      DBG(1, "Trying to say something on Speech Dispatcher\n");
+  if (options.probe_mode){
+      LOG(1, "This is just a probe mode. Not trying to read Speakup's device.\n");     
+      LOG(1, "Trying to say something on Speech Dispatcher\n");
       spd_say(conn, SPD_MESSAGE, "Hello! It seems SpeechD-Up works correctly!\n");
-      DBG(1, "Trying to close connection to Speech Dispatcher\n");
+      LOG(1, "Trying to close connection to Speech Dispatcher\n");
       spd_close(conn);
-      DBG(1, "SpeechD-Up is terminating correctly in probe mode");
+      LOG(1, "SpeechD-Up is terminating correctly in probe mode");
       return 0;
   }
 
   ret = spd_set_data_mode(conn,SPD_DATA_SSML);
   if (ret){
-      DBG(1, "ERROR: This version of Speech Dispatcher doesn't support SSML mode.\n"
+      LOG(1, "ERROR: This version of Speech Dispatcher doesn't support SSML mode.\n"
 	  "Please use a newer version of Speech Dispatcher (at least 0.5)");
       FATAL(6, "SSML not supported in Speech Dispatcher");
   }
 
-  if (!DONT_INIT_TABLES){
+  if (!options.dont_init_tables){
       ret = init_speakup_tables();
       if (ret){
-	  DBG(1, "ERROR: It was not possible to init Speakup /proc tables for\n"
+	  LOG(1, "ERROR: It was not possible to init Speakup /proc tables for\n"
 	      "characters and character types."
 	      "This error might appear because you use an old version of Speakup!"
 	      "If your instalation of Speakup is new:In order for internationalization\n"
@@ -693,7 +683,7 @@ main (int argc, char *argv[])
       return -1;
     }
     buf[chars_read] = 0;
-    DBG(5, "Main loop characters read = %d : (%s)", chars_read, buf);
+    LOG(5, "Main loop characters read = %d : (%s)", chars_read, buf);
     parse_buf(buf, chars_read);
   }
 
