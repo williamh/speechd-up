@@ -9,6 +9,7 @@ You will need these components to compile and run speechd-up:
 	use of the Read All command and internationalization)
  - texinfo (you can live without it if you use just `make speechd-up', but
 	you won't have the documentation installed)
+ - libdotconf 1.0 (http://www.azzit.de/dotconf/)
 
 If you are building from CVS, you also need these:
  - automake 1.7+, autoconf, pkg-config and libtool
@@ -50,6 +51,10 @@ If everything worked right, you can install all the parts to the default
 path by running (as root):
 
  $ make install
+
+Edit the configuration file in /etc/speechd-up.conf
+or /usr/local/etc/speechd-up.conf according to your needs.
+Most important, set your language and charset coding.
 
 Making SpeakUp work with SpeechdUp and software synthesis
 =========================================================

@@ -1,3 +1,55 @@
+2006-12-13  Hynek Hanke  <hanke@brailcom.org>
+
+	* speechd-up.texi: Mention language settings and existence of the new
+	configuration file.
+
+	* configure.in: Check for libdotconf.
+
+	* Makefile.am: Pass VERSION as read from version.sh to gcc.
+	Link with libdotconf.
+	Add speechd-up.conf into configuration data.
+
+	* options.h: Don't define VERSION.
+
+	* version.sh (VERSION): Incremented to 0.5alpha
+
+	* NEWS: Text based configuration, language settings.
+
+	* speechd-up.conf: New file -- configuration for Speechd-Up.
+
+	* speechd-up.c (speechd_init): Set the desired language if specified
+	on command line or in configuration file.
+
+	* options.c (options_print_help): New option: -i, --language.
+
+	* options.h (options): Group all options inside one structure options,
+	keeping records of where this setting comes from
+	[DEFAULT, COMMAND_LINE, CONFIG_FILE].
+	(spd_long_options): New option language.
+
+	* log.c: New file. Code moved from speechd-up.c
+
+	* log.h: New file. Code moved from speechd-up.c -- header file.
+
+	* configuration.c: New file. Static text-based (/etc/) configuration
+	for speechd-up.
+
+	* configuration.h: New file. Static text-based (/etc/) configuration
+	for speechd-up -- header file.
+
+2006-12-07  Hynek Hanke  <hanke@brailcom.org>
+
+	* configure.in: Hack for the -rpath issue.
+
+2006-11-29  Hynek Hanke  <hanke@brailcom.org>
+
+	* speechd-up.c (say_single_character): Incorrect number of arguments
+	for DBG fixed.
+
+2006-11-26  Hynek Hanke  <hanke@brailcom.org>
+
+	* speechd-up.c (main): sp
+
 2006-10-21  Hynek Hanke  <hanke@brailcom.org>
 
 	* speechd-up.texi: Typo.

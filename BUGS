@@ -1,23 +1,6 @@
 
 Many known bugs.
 
-* Reading keys/characters is slow
-
-The way Speakup passes individual characters after the user types them on the
-screen makes it impossible to tell these are individual characters typed by the
-user and so no caching mechanisms are used in Speech Dispatcher and everything
-is synthesized like an ordinary text.
-
-Worse, spaces appearing around single characters as received by Speakup make
-some synthesizers add additional delays into the resulting sound.
-
-* It doesn't speak my language / it uses some weird character set
-
-Speakup currently only supports English. You can make a try with
-	speechd-up -c <character-set>
-but if you don't succeed, it's better to give it up (unless you want
-to contribute to Speakup's developement).
-
 * The spelling/punctuation modes of my favourite synthesizer don't work.
 
 Speakup uses it's own very simple spelling and punctuation substitution and
@@ -54,10 +37,9 @@ else. That's the reason why we provide this application and we will try to help
 you if you have problems or questions.
 
 If you are looking for a software speech synthesis solution, it's probably
-better to look into Emacs and it's interfaces Emacspeak and speechd-el.  As of
+better to look into Emacs and it's interfaces speechd-el or Emacspeak.  As of
 May 2005, we don't know about any good screen reader that would be useful with
 software synthesis, but that might change.
-
 
 PLEASE don't let this document discourage you in REPORTING BUGS that are not
 listed here. It might be something we *are* able to fix and other user's might
