@@ -19,7 +19,7 @@
 @page
 @vskip 0pt plus 1filll
 
-This manual documents SpeechD-Up, version 0.4.
+This manual documents SpeechD-Up, version 0.5.
 
 Copyright @copyright{} 2005,2006 Brailcom, o.p.s.
 
@@ -48,7 +48,7 @@ section entitled ``GNU General Public License''.
 @ifnottex
 @node Top, Installing, (dir), (dir)
 
-This manual documents SpeechD-Up, version 0.4.
+This manual documents SpeechD-Up, version 0.5.
 
 Copyright @copyright{} 2005, 2006 Brailcom, o.p.s.
 
@@ -85,6 +85,7 @@ visually impaired people to use the computer.
 @menu
 * Installing::                  SpeakUp and software synthesis
 * Invoking::                    How to start SpeechD-Up
+* Configuration::               Text based configuration in etc/
 * Problems::                    It has many problems
 * Contact and Reporting Bugs::  If you want to contact us
 * How You Can Help::            We rely on your support
@@ -280,7 +281,7 @@ See @ref{Problems}
 
 @end enumerate
 
-@node Invoking, Problems, Installing, Top
+@node Invoking, Configuration, Installing, Top
 @chapter Invoking
 @comment  node-name,  next,  previous,  up
 
@@ -304,6 +305,12 @@ console is not in iso-8859-1! (It doesn't work with ``utf-8'' and
 other multibyte encoding because of kernel related issues with this
 encoding. You must run your console in a unibyte encoding like for
 example one of the ``iso-8859-*'' set, sorry.)
+@item -i or --language
+Specifies the language to use. You must provide a 2 character ISO 839
+language code (such as ``en'', ``de'', ``fr'', ``cs''). This language will
+be set via Speech Dispatcher and if you have a synthesizer configured for it,
+Speakup should talk this language. It is currently not possible to switch languages
+on-fly because of limitations of Speakup.
 @item -t or --dont-init-tables
 SpeechD-Up tries to init some Speakups /proc tables on its start. Most important, it
 changes /proc/characters and /proc/chartab so that punctuation, capital letters recognition
@@ -338,7 +345,20 @@ Please use this for debugging or sending bug-reports
 speechd-up -s -l 5 -L "/tmp/speechd-up.log"
 @end example
 
-@node Problems, Contact and Reporting Bugs, Invoking, Top
+@node Configuration, Problems, Invoking, Top
+@chapter Configuration
+
+There is a configuration file available in @file{/etc/speechd-up.conf}
+or @file{/usr/local/etc/speechd-up.conf} or similar location based
+on your instalation.
+
+You can influence such options as the path to the Speakup softsynth
+device, default language and character encoding set, also some
+charactersitics of Speechd-Up behaviour. Please read comments provided
+inside the configuration file to learn what options are available
+and what are their possible values.
+
+@node Problems, Contact and Reporting Bugs, Configuration, Top
 @chapter Problems
 
 There are many known problems with Speakup/SpeechD-Up. You might want
@@ -386,7 +406,11 @@ for inherent issues with wide characters inside the kernel.
 
 @item
 Not running @code{speechd-up} with the @code{-c} parameter and specifying
-the proper character set your console uses.
+the proper character set your console uses or not setting the SpeakupCoding
+option in the configuration file. Alternatively, you may not be specifying
+the language to use. You can choose a language either in Speech Dispatcher
+configuration or via @code{--language} or in the @file{speechd-up.conf}
+configuration file.
 
 @item
 Running @code{speechd-up} with the @code{-t} or @code{--dont-init-tables}.
