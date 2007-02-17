@@ -1,3 +1,19 @@
+2007-02-18  Hynek Hanke  <hanke@brailcom.org>
+
+	* Makefile.am: Add Wall to CFLAGS.
+
+	* log.c: Include time.h
+
+	* options.h: Added prototypes for options_set_defailt,
+	options_print_version and options_parse.
+
+	* speechd-up.c (parse_buf): Initialize cmd_type to space.
+	(process_command): Remove val variables from log messages.
+	(process_command): Returns void.
+	Include ctype.h
+
+	* Makefile.am (EXTRA_DIST): version.sh added.
+
 2006-12-13  Hynek Hanke  <hanke@brailcom.org>
 
 	* speechd-up.texi: Mention language settings and existence of the new
