@@ -18,13 +18,14 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $Id: log.c,v 1.1 2006-12-13 18:00:34 hanke Exp $
+ * $Id: log.c,v 1.2 2007-02-17 23:28:45 hanke Exp $
  */
 
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <time.h>
 #include "configuration.h"
 #include "options.h"
 #include "log.h"
