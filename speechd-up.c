@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.14 2006-12-13 18:01:35 hanke Exp $
+ * $Id: speechd-up.c,v 1.15 2007-02-17 23:25:38 hanke Exp $
  */
 
 #include <stdio.h>
@@ -31,6 +31,7 @@
 #include <assert.h>
 #include <stdarg.h>
 #include <signal.h>
+#include <ctype.h>
 
 #include <iconv.h>
 #include <libspeechd.h>
@@ -60,7 +61,7 @@ index_marker_callback(size_t msg_id, size_t client_id, SPDNotificationType type,
 {
     //LOG(5,"Index Mark Callback");
     if (index_mark != NULL){
-	int cw = write(fd, index_mark, sizeof(index_mark));
+	write(fd, index_mark, sizeof(index_mark));
     }
 }
 
@@ -125,10 +126,10 @@ init_speakup_tables()
     return 0;
 }
 
-int
+void
 process_command(char command, unsigned int param, int pm)
 {
-    int val, ret;
+    int val, ret = 0;
     static int currate = 5,
 	curpitch = 5;
     
@@ -146,17 +147,17 @@ process_command(char command, unsigned int param, int pm)
     case 'b': /* set punctuation level */
 	switch(param){
 	case 0:
-	    LOG(5, "[punctuation all]", val);
+	    LOG(5, "[punctuation all]");
 	    ret = spd_set_punctuation(conn, SPD_PUNCT_ALL);
 	    ret = spd_set_capital_letters(conn, SPD_CAP_SPELL);
 	    break;
 	case 1:
 	case 2:
-	    LOG(5, "[punctuation some]", val);
+	    LOG(5, "[punctuation some]");
 	    ret = spd_set_punctuation(conn, SPD_PUNCT_SOME);
 	    break;
 	case 3:
-	    LOG(5, "[punctuation none]", val);
+	    LOG(5, "[punctuation none]");
 	    ret = spd_set_punctuation(conn, SPD_PUNCT_NONE);
 	    break;
 	default: LOG(1, "ERROR: Invalid punctuation mode!");
@@ -240,8 +241,7 @@ process_command(char command, unsigned int param, int pm)
 	break;
     default:
 	LOG(3, "ERROR: [%c: this command is not supported]", command);
-    }
-    
+    }    
 }
 
 /* Say a single character.
@@ -303,11 +303,10 @@ int
 parse_buf(char *buf, size_t bytes)
 { 
   char helper[20];
-  char cmd_type;
+  char cmd_type = ' ';
   int  n, m;
   unsigned int param;
   int pm;
-  int ret;
 
   iconv_t cd;
   int i;
@@ -568,7 +567,6 @@ load_configuration(void)
 int
 main (int argc, char *argv[])
 {
-  int i;
   size_t chars_read;
   char buf[BUF_SIZE];
   int ret;
