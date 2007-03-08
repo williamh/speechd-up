@@ -1,3 +1,16 @@
+2007-03-08  Hynek Hanke  <hanke@brailcom.org>
+
+	* Makefile.am (speechd_up_CFLAGS): Added LOGPATH.
+
+	* options.c (options_set_default): New LOGPATH variable to control
+	path to logfile.
+
+	* speechd-up.c (main): Backslash included between PIDPATH and
+	pidfile name.
+
+	* configure.in (sysconfdir): rpath fix moved down the file.
+	New variable logpath.
+
 2007-02-18  Hynek Hanke  <hanke@brailcom.org>
 
 	* Makefile.am: Add Wall to CFLAGS.
