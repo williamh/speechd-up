@@ -2,7 +2,7 @@
 /*
  * speechd-up.c - Simple interface between SpeakUp and Speech Dispatcher
  *
- * Copyright (C) 2004, 2006 Brailcom, o.p.s.
+ * Copyright (C) 2004, 2006, 2007 Brailcom, o.p.s.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.15 2007-02-17 23:25:38 hanke Exp $
+ * $Id: speechd-up.c,v 1.16 2007-03-08 21:20:24 hanke Exp $
  */
 
 #include <stdio.h>
@@ -577,7 +577,7 @@ main (int argc, char *argv[])
   if (!strcmp(PIDPATH, ""))
     spd_spk_pid_file = (char*) strdup("/var/run/speechd-up.pid");
   else
-    spd_spk_pid_file = (char*) strdup(PIDPATH"speechd.pid");
+    spd_spk_pid_file = (char*) strdup(PIDPATH"/speechd-up.pid");
   
   if (create_pid_file() == -1) exit(1);
 
