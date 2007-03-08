@@ -3,7 +3,7 @@
 bin_PROGRAMS = speechd-up
 
 speechd_up_SOURCES = speechd-up.c options.c options.h log.c log.h configuration.c configuration.h
-speechd_up_CFLAGS = -DPIDPATH=\"@pidpath@\" -DSYS_CONF=\"@sysconfdir@\" -DVERSION=\"$(VERSION)\" -Wall
+speechd_up_CFLAGS = -DPIDPATH=\"@pidpath@\" -DLOGPATH=\"@logpath@\" -DSYS_CONF=\"@sysconfdir@\" -DVERSION=\"$(VERSION)\" -Wall
 speechd_up_LDADD = -ldotconf
 COMPILE = $(CC) $(speechd_up_CFLAGS) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 EXTRA_DIST= ChangeLog NEWS TODO AUTHORS COPYING INSTALL README speechd-up.conf version.sh
