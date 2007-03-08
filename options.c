@@ -1,7 +1,7 @@
 /*
  * options.c - Parse and process possible command line options
  *
- * Copyright (C) 2003,2004, 2006 Brailcom, o.p.s.
+ * Copyright (C) 2003,2004, 2006, 2007 Brailcom, o.p.s.
  *
  * This is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: options.c,v 1.7 2006-12-13 18:00:06 hanke Exp $
+ * $Id: options.c,v 1.8 2007-03-08 21:20:05 hanke Exp $
  */
 
 #include <assert.h>
@@ -76,7 +76,10 @@ options_set_default(void)
   options.spd_spk_mode = MODE_DAEMON;
   options.log_level = 3;
   options.log_level_set = DEFAULT;
-  options.log_file_name = strdup("/var/log/speechd-up.log");
+  if (!strcmp(LOGPATH, ""))
+    options.log_file_name = strdup("/var/log/speechd-up.log");
+  else
+    options.log_file_name = strdup(LOGPATH"/speechd-up.log");
   options.log_file_name_set = DEFAULT;
   options.speakup_device = strdup("/dev/softsynth");
   options.speakup_device_set = DEFAULT;
