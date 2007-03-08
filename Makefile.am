@@ -6,7 +6,7 @@ speechd_up_SOURCES = speechd-up.c options.c options.h log.c log.h configuration.
 speechd_up_CFLAGS = -DPIDPATH=\"@pidpath@\" -DLOGPATH=\"@logpath@\" -DSYS_CONF=\"@sysconfdir@\" -DVERSION=\"$(VERSION)\" -Wall
 speechd_up_LDADD = -ldotconf
 COMPILE = $(CC) $(speechd_up_CFLAGS) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-EXTRA_DIST= ChangeLog NEWS TODO AUTHORS COPYING INSTALL README speechd-up.conf version.sh
+EXTRA_DIST= ChangeLog NEWS TODO AUTHORS COPYING INSTALL README speechd-up.conf version.sh build.sh
 
 sysconf_DATA = speechd-up.conf
 
