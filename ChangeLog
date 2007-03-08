@@ -1,6 +1,7 @@
 2007-03-08  Hynek Hanke  <hanke@brailcom.org>
 
 	* Makefile.am (speechd_up_CFLAGS): Added LOGPATH.
+	(EXTRA_DIST): Added build.sh script.
 
 	* options.c (options_set_default): New LOGPATH variable to control
 	path to logfile.
