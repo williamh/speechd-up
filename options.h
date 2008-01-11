@@ -18,7 +18,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: options.h,v 1.9 2007-02-17 23:27:55 hanke Exp $
+ * $Id: options.h,v 1.10 2008-01-11 14:34:54 hanke Exp $
  */
 
 #include <getopt.h>
@@ -41,6 +41,7 @@ struct {
     char *log_file_name;
     int log_file_name_set;
     int spd_spk_mode;
+    char *config_file_name;
     char *speakup_device;
     int speakup_device_set;
     char *speakup_coding;
@@ -57,6 +58,7 @@ static struct option spd_long_options[] = {
     {"run-single", 0, 0, 's'},
     {"log-level", 1, 0, 'l'},
     {"log-file", 1, 0, 'L'},
+    {"config-file", 1, 0, 'C'},
     {"device", 1, 0, 'D'},
     {"coding", 1, 0, 'c'},
     {"language", 1, 0, 'i'},
@@ -68,7 +70,7 @@ static struct option spd_long_options[] = {
     {0, 0, 0, 0}
 };
 
-static char* spd_short_options = "dsvhpti:l:L:D:S:c:";
+static char* spd_short_options = "dsvhpti:l:L:C:D:S:c:";
 
 void options_set_default(void);
 void options_print_version(void);
