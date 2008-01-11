@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.16 2007-03-08 21:20:24 hanke Exp $
+ * $Id: speechd-up.c,v 1.17 2008-01-11 14:35:00 hanke Exp $
  */
 
 #include <stdio.h>
@@ -32,6 +32,9 @@
 #include <stdarg.h>
 #include <signal.h>
 #include <ctype.h>
+
+#include <wchar.h>
+#include <wctype.h>
 
 #include <iconv.h>
 #include <libspeechd.h>
@@ -256,48 +259,56 @@ characters when moving with the cursor. It is currently impossible
 to distinguish KEYs from CHARacters in Speakup.
 */
 void
-say_single_character(char *buf, size_t bytes, iconv_t *cd)
+say_single_character(char character)
 {
     char cmd[15];
-    char *cuu;
-    char *cu;
-    size_t in = 1, out = 8;
-    size_t enc_bytes;
 
-    assert(buf);
-    assert(cd);
-    
-    cuu = cu = malloc(9*sizeof(char));
-    if (cuu == NULL) FATAL(4, "Can't allocate memmory.");
+    if (character=='\n') return;
 
-
-    LOG(5, "Saying single character. Input: |%s|", buf);
-    
-    enc_bytes = iconv(cd, (char**) &buf, &in, (char**) &cu, &out);
-    if (enc_bytes < 0){
-	LOG(5, "Couldn't recode this string. Failed.");
-	free(cuu);
-	return;
-    }
-	
-    /* Put the null at the end of string */
-    *cu = 0;
-    
-    LOG(5, "Saying single character |%s|", cuu);
+    LOG(5, "Saying single character: |%c|", character);
 
     /* It seems there is a bug in libspeechd function spd_say_char() */
     {
-	snprintf(cmd, 14, "KEY %s", cuu);
-	LOG(5, "Saying single character CMD:|%s|", cmd);
+	snprintf(cmd, 14, "CHAR %c", character);
 	spd_execute_command(conn, "SET SELF PRIORITY TEXT");
 	spd_execute_command(conn, cmd);
     }
 
-    free(cuu);
-    return;
-      
+    return;      
 }
 
+
+void
+speak(char *text)
+{
+  char *ssml_text;
+  /* Check whether text contains more than one
+     printable character. If so, use spd_say,
+     otherwise use say_single_character */
+  
+  int printables = 0;
+  int i;
+  char first_character = 0;
+
+  assert(text);
+  for(i=0;i<=strlen(text)-1;i++){
+    if (isprint(text[i]) && (text[i] != ' ')){
+      if (first_character == 0)
+	first_character = text[i];
+      printables++;
+    }
+  }
+
+  if (printables == 1){
+    LOG(5, "Sending to speechd as character: |%c|", first_character);
+    say_single_character(first_character);
+  }else{
+    ssml_text = malloc(strlen(text)+16);
+    snprintf(ssml_text, strlen(text)+16, "<speak>%s</speak>", text);
+    LOG(5, "Sending to speechd as text: |%s|", ssml_text);
+    spd_say(conn, SPD_MESSAGE, ssml_text);
+  }
+}
 
 int
 parse_buf(char *buf, size_t bytes)
@@ -311,8 +322,6 @@ parse_buf(char *buf, size_t bytes)
   iconv_t cd;
   int i;
   int enc_bytes;
-  char *start_tag="<speak>";
-  char *end_tag="</speak>\x00";
   //char *mark_tag="<mark name=\"%s\">";
   char *pi, *po;
   size_t bytes_left = BUF_SIZE;
@@ -328,42 +337,11 @@ parse_buf(char *buf, size_t bytes)
       FATAL(1, "Requested character set conversion not possible"
 	    "by iconv: %s!", strerror(errno));
 
-  /* Look if the message only contains one character (characters=1) */
-  {
-        int characters = 0;
-	char *c;
-	LOG(5, "BUF:|%s|", buf);
-	/* Find the first non-whitespace non-controll character,
-	   make pointer _c_ point to it. If it is the only character
-	   in the string, _characters_ is 1, otherwise different. */
-	for (i=0; i<=bytes-1; i++){
-	    if (buf[i] != ' '){
-		c=buf+i;
-		characters++;
-		if (characters>1) break;
-	    }
-	    if ((unsigned) buf[i] < 32){
-		characters = -1; break;
-	    }
-
-	}
-
-	if (characters == 1){
-	    say_single_character(c, bytes-i, cd);
-	    iconv_close(cd);
-	    return 0;
-	} /* else continue parsing the buffer*/
-  }
-
-  /* This message contains more than one character. Possibly text and
-   embedded commands. */
-
   pi = buf;
   po = text;
   m = 0;
 
-  strcpy(text,start_tag);
-  po=text+strlen(start_tag);
+  po=text;
 
   for(i = 0; i < bytes; i++)
     {
@@ -373,9 +351,7 @@ parse_buf(char *buf, size_t bytes)
 	  spd_cancel(conn);
 	  LOG(5, "[stop]");
 	  pi = &(buf[i+1]);
-	  //po = text;
-          strcpy(text,start_tag);
-          po=text+strlen(start_tag);
+	  po = text;          
 	  m = 0;
 	}
 
@@ -416,16 +392,14 @@ parse_buf(char *buf, size_t bytes)
             {
               LOG(5, "text: |%s|", text);
               LOG(5, "[speaking (2)]");
-              strcat(text,end_tag);
-              spd_say(conn, SPD_MESSAGE, text);
+              speak(text);
               m = 0;
             }
 	    /* Now when we have the command (cmd_type) and it's
 	       parameter, let's communicate it to speechd */
 	    process_command(cmd_type, param, pm);
 	    pi = &(buf[i+1]);
-            strcpy(text,start_tag);
-            po=text+strlen(start_tag);
+            po=text;
 	  }
 	}
       else
@@ -448,10 +422,9 @@ parse_buf(char *buf, size_t bytes)
   assert(m>=0);
 
   if (m != 0){
-    strcpy(po,end_tag);  
     LOG(5,"text: |%s %d|", text, m);
     LOG(5, "[speaking]");
-    spd_say(conn, SPD_MESSAGE, text);
+    speak(text);
     LOG(5,"---");
   }
 
@@ -544,7 +517,6 @@ destroy_pid_file()
 void
 load_configuration(void)
 {
-    char *configfilename = SYS_CONF"/speechd-up.conf";
     configfile_t *configfile = NULL;
     int dc_num_options = 0;
     configoption_t *dc_options = NULL;
@@ -552,15 +524,18 @@ load_configuration(void)
     /* Load new configuration */
     dc_options = load_config_options(&dc_num_options);
     
-    configfile = dotconf_create(configfilename, dc_options,
+    configfile = dotconf_create(options.config_file_name, dc_options,
 				0, CASE_INSENSITIVE);
-    if (!configfile) FATAL (-1, "Error opening config file\n");
+    if (!configfile){
+      LOG(0, "Error opening config file\n");
+      return;
+    }
     if (dotconf_command_loop(configfile) == 0)
 	FATAL(-1, "Error reading config file\n");
     dotconf_cleanup(configfile);
 
     free_config_options(dc_options, &dc_num_options);
-    LOG(1,"Configuration has been read from \"%s\"", configfilename);
+    LOG(1,"Configuration has been read from \"%s\"", options.config_file_name);
 }
 
 
