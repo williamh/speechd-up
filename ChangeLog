@@ -1,3 +1,19 @@
+2008-01-11  Hynek Hanke  <hanke@syrr.buchal.name>
+
+	* speechd-up.c (say_single_character): Encoding handling no longer necessary here.
+	(say_single_character): Use CHAR instead of KEY SSIP command.
+	(speak): New function -- counts printable characters except spaces and
+	decides whether to use spd_say or say_single_character. Also handles ssml <speak>.
+	(parse_buf): Do not add <speak></speak> to the text (leave it on speak())
+	(parse_buf): Do not try to distinguish single character messages here (done in speak() now).
+	(load_configuration): If impossible to read config file, do not fail, but use defaults.
+	(load_configuration): Use options.config_file_name for configuration file path.
+
+	* options.c (options_parse): handle --config-file.
+
+	* options.h (spd_long_options): New option: --config-file, -C
+	(spd_long_options): Added config_file_name to options.
+
 2007-03-08  Hynek Hanke  <hanke@brailcom.org>
 
 	* Makefile.am (speechd_up_CFLAGS): Added LOGPATH.
