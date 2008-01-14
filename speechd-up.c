@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.19 2008-01-14 10:18:32 hanke Exp $
+ * $Id: speechd-up.c,v 1.20 2008-01-14 10:33:24 hanke Exp $
  */
 
 #include <stdio.h>
@@ -32,6 +32,7 @@
 #include <stdarg.h>
 #include <signal.h>
 #include <ctype.h>
+#include <locale.h>
 
 #include <wchar.h>
 #include <wctype.h>
@@ -292,7 +293,7 @@ speak(char *text)
 
   assert(text);
   for(i=0;i<=strlen(text)-1;i++){
-    if (text[i] != ' '){
+    if (!isspace(text[i])){
       if (first_character == 0)
 	first_character = text[i];
       printables++;
@@ -548,6 +549,8 @@ main (int argc, char *argv[])
 
   options_set_default();
   options_parse(argc, argv);
+
+  setlocale(LC_CTYPE, "C");
 
   if (!strcmp(PIDPATH, ""))
     spd_spk_pid_file = (char*) strdup("/var/run/speechd-up.pid");
