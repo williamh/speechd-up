@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.17 2008-01-11 14:35:00 hanke Exp $
+ * $Id: speechd-up.c,v 1.18 2008-01-14 10:18:04 hanke Exp $
  */
 
 #include <stdio.h>
@@ -292,7 +292,7 @@ speak(char *text)
 
   assert(text);
   for(i=0;i<=strlen(text)-1;i++){
-    if (isprint(text[i]) && (text[i] != ' ')){
+    if (text[i] != ' '){
       if (first_character == 0)
 	first_character = text[i];
       printables++;
