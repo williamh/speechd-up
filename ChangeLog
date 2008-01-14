@@ -1,3 +1,7 @@
+2008-01-14  Hynek Hanke  <hanke@syrr.buchal.name>
+
+	* speechd-up.c: (speak): Do not test for isprint().
+
 2008-01-11  Hynek Hanke  <hanke@syrr.buchal.name>
 
 	* speechd-up.c (say_single_character): Encoding handling no longer necessary here.
