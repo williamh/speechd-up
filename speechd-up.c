@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.18 2008-01-14 10:18:04 hanke Exp $
+ * $Id: speechd-up.c,v 1.19 2008-01-14 10:18:32 hanke Exp $
  */
 
 #include <stdio.h>
@@ -565,8 +565,6 @@ main (int argc, char *argv[])
 	    options.log_file_name);
     exit(1);
   }
-
-  printf("DD:%d:DD", options.language_set);
 
   /* Fork, set uid, chdir, etc. */
   if (options.spd_spk_mode == MODE_DAEMON){
