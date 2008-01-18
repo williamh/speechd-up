@@ -1,5 +1,9 @@
 2008-01-18  Hynek Hanke  <hanke@syrr.buchal.name>
 
+	* speechd-up.c (recode_text): Debugging leftover removed.
+
+2008-01-18  Hynek Hanke  <hanke@syrr.buchal.name>
+
 	* speechd-up.c (say_single_character): Do not exclude newline.
 	(recode_text): New function.
 	(say_single_character): Handle recoding using recode_text.
