@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.21 2008-01-18 14:42:29 hanke Exp $
+ * $Id: speechd-up.c,v 1.22 2008-01-18 16:05:45 hanke Exp $
  */
 
 #include <stdio.h>
@@ -292,6 +292,7 @@ recode_text(char *text)
   utf8_text = malloc(4*strlen(text)+1);
   out_p = utf8_text;
   out_bytes = 4*strlen(text);
+  in_bytes=strlen(text);
 
   /* Initialize ICONV for charset conversion */
   cd = iconv_open("utf-8", options.speakup_coding);
@@ -299,8 +300,6 @@ recode_text(char *text)
     FATAL(1, "Requested character set conversion not possible"
 	  "by iconv: %s!", strerror(errno));
   
-  in_bytes=strlen(text);
-  out_bytes=20;
 
   enc_bytes = iconv(cd, &text, &in_bytes, &out_p, &out_bytes);
   if (enc_bytes == -1){
