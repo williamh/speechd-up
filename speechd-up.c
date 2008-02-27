@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.22 2008-01-18 16:05:45 hanke Exp $
+ * $Id: speechd-up.c,v 1.23 2008-02-27 09:14:10 hanke Exp $
  */
 
 #include <stdio.h>
@@ -59,6 +59,13 @@ SPDConnection *conn;
 char *spd_spk_pid_file;
 
 void spd_spk_reset(int sig);
+
+/* Lifted directly from speechd/src/modules/module_utils.c. */
+void
+xfree(void *data)
+{
+    if (data != NULL) free(data);
+}
 
 void
 index_marker_callback(size_t msg_id, size_t client_id, SPDNotificationType type,
@@ -319,7 +326,7 @@ recode_text(char *text)
 int
 speak(char *text)
 {
-  char *ssml_text;
+  char *ssml_text = NULL;
   /* Check whether text contains more than one
      printable character. If so, use spd_say,
      otherwise use say_single_character.
@@ -330,8 +337,8 @@ speak(char *text)
   
   int printables = 0;
   int i;
-  char *utf8_text;
-  int spd_ret;
+  char *utf8_text = NULL;
+  int spd_ret = 0, ret = 0;
   char character[2];
 
   assert(text);
@@ -351,17 +358,23 @@ speak(char *text)
     spd_ret = say_single_character(utf8_text);
   }else{
     utf8_text = recode_text(text);
-    if (utf8_text == NULL) return -1;
-    ssml_text = malloc(strlen(utf8_text)+16);
-    snprintf(ssml_text, strlen(text)+16, "<speak>%s</speak>", utf8_text);
-    LOG(5, "Sending to speechd as text: |%s|", ssml_text);
-    spd_ret = spd_say(conn, SPD_MESSAGE, ssml_text);
+    if (utf8_text == NULL)
+      ret =  -1;
+    else {
+      ssml_text = malloc(strlen(utf8_text)+16);
+      snprintf(ssml_text, strlen(text)+16, "<speak>%s</speak>", utf8_text);
+      LOG(5, "Sending to speechd as text: |%s|", ssml_text);
+      spd_ret = spd_say(conn, SPD_MESSAGE, ssml_text);
+    }
   }
 
-  if (spd_ret != 0)
-    return -2;
+  xfree(utf8_text);
+  xfree(ssml_text);
 
-  return 0;
+  if (spd_ret != 0)
+    ret =  -2;
+
+  return ret;
 }
 
 int
