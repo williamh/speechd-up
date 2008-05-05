@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.23 2008-02-27 09:14:10 hanke Exp $
+ * $Id: speechd-up.c,v 1.24 2008-05-05 09:15:15 hanke Exp $
  */
 
 #include <stdio.h>
@@ -98,7 +98,7 @@ speechd_close()
 int
 init_speakup_tables()
 {
-    FILE* fp_char = fopen ("/proc/speakup/characters", "w");
+    FILE* fp_char = fopen (options.speakup_characters, "w");
     if (fp_char)
 	{
 	    int i=0;
@@ -115,7 +115,7 @@ init_speakup_tables()
     else return -1;
 	
     
-    fp_char = fopen ("/proc/speakup/chartab", "w");
+    fp_char = fopen (options.speakup_chartab, "w");
     if (fp_char)
 	{
 	    int i=0;
