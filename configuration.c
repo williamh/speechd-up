@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
  *
- * $Id: configuration.c,v 1.1 2006-12-13 17:59:35 hanke Exp $
+ * $Id: configuration.c,v 1.2 2008-05-05 09:15:33 hanke Exp $
  */
 
 #include <stdio.h>
@@ -106,6 +106,8 @@ DOTCONF_CB_INT(LogLevel, log_level, ((val>=0)&&(val<=5)),
   "only for debugging).");
 DOTCONF_CB_STR(LogFile, log_file_name);
 DOTCONF_CB_STR(SpeakupDevice, speakup_device);
+DOTCONF_CB_STR(SpeakupChartab, speakup_chartab);
+DOTCONF_CB_STR(SpeakupCharacters, speakup_characters);
 DOTCONF_CB_STR(SpeakupCoding, speakup_coding);
 DOTCONF_CB_STR(Language, language);
 DOTCONF_CB_INT(DontInitTables, dont_init_tables,
@@ -113,6 +115,7 @@ DOTCONF_CB_INT(DontInitTables, dont_init_tables,
 			   "DontInitTables must be either 0 or 1.");
 
 DOTCONF_CB(cb_unknown)
+
 {
     LOG(2,"Unknown option in configuration!");
     return NULL;
@@ -137,6 +140,8 @@ load_config_options(int *num_options)
     ADD_CONFIG_OPTION(LogFile, ARG_STR);
     ADD_CONFIG_OPTION(SpeakupDevice, ARG_STR);
     ADD_CONFIG_OPTION(SpeakupCoding, ARG_STR);
+    ADD_CONFIG_OPTION(SpeakupChartab, ARG_STR);
+    ADD_CONFIG_OPTION(SpeakupCharacters, ARG_STR);
     ADD_CONFIG_OPTION(Language, ARG_STR);
     ADD_CONFIG_OPTION(DontInitTables, ARG_TOGGLE);
 
