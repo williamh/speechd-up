@@ -18,7 +18,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: options.c,v 1.9 2008-01-11 14:34:46 hanke Exp $
+ * $Id: options.c,v 1.10 2008-05-05 09:15:28 hanke Exp $
  */
 
 #include <assert.h>
@@ -83,6 +83,10 @@ options_set_default(void)
   options.log_file_name_set = DEFAULT;
   options.config_file_name = strdup(SYS_CONF"/speechd-up.conf");
   options.speakup_device = strdup("/dev/softsynth");
+  options.speakup_device_set = DEFAULT;
+  options.speakup_chartab = strdup("/sys/module/speakup/parameters/chartab");
+  options.speakup_chartab_set = DEFAULT;
+  options.speakup_characters = strdup("/sys/module/speakup/parameters/characters");
   options.speakup_device_set = DEFAULT;
   options.speakup_coding = strdup("iso-8859-1");
   options.speakup_coding_set = DEFAULT;
