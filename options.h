@@ -18,7 +18,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: options.h,v 1.10 2008-01-11 14:34:54 hanke Exp $
+ * $Id: options.h,v 1.11 2008-05-05 09:15:25 hanke Exp $
  */
 
 #include <getopt.h>
@@ -44,6 +44,10 @@ struct {
     char *config_file_name;
     char *speakup_device;
     int speakup_device_set;
+    char *speakup_chartab;
+    int speakup_chartab_set;
+    char * speakup_characters;
+    int speakup_characters_set;
     char *speakup_coding;
     int speakup_coding_set;
     char *language;

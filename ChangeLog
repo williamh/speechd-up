@@ -1,3 +1,13 @@
+2008-05-05  Hynek Hanke  <hanke@brailcom.org>
+
+	* configuration.c: SpeakupChartab and SpeakupCharacters new options.
+
+	* options.c (options_set_default): speakup_chartab and
+	speakup_characters defaults added.
+
+	* speechd-up.c (init_speakup_tables): Use options.speakup_chartab and
+	options.speakup_characters for names of proc files.
+
 2008-02-27  Hynek Hanke  <hanke@brailcom.org>
 
 	* speechd-up.c (speak): Avoid memmory leaks patch.
