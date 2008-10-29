@@ -19,7 +19,7 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
- * $Id: speechd-up.c,v 1.24 2008-05-05 09:15:15 hanke Exp $
+ * $Id: speechd-up.c,v 1.25 2008-10-29 14:57:33 hanke Exp $
  */
 
 #include <stdio.h>
@@ -58,6 +58,7 @@ SPDConnection *conn;
 
 char *spd_spk_pid_file;
 
+void init_ssml_char_escapes(void);
 void spd_spk_reset(int sig);
 
 /* Lifted directly from speechd/src/modules/module_utils.c. */
@@ -87,6 +88,7 @@ speechd_init()
 	LOG(1,"Error turning on Index Mark Callback");
   if (options.language_set != DEFAULT)
       spd_set_language(conn, options.language);
+  init_ssml_char_escapes();
 }
 
 void
@@ -289,6 +291,82 @@ say_single_character(char* character)
   return 0;      
 }
 
+const char *ssml_less_than = "&lt;";
+const char *ssml_greater_than = "&gt;";
+const char *ssml_ampersand = "&amp;";
+const char *ssml_single_quote = "&apos;";
+const char *ssml_double_quote = "&quot;";
+
+const char *ssml_entities[128];
+int ssml_entity_lengths[128];
+
+/*
+  init_ssml_char_escapes: initialize the tables that describe SSML character
+  escapes. */
+
+void
+init_ssml_char_escapes(void)
+{
+  int i = 0;
+  for(i = 0; i < (sizeof(ssml_entities) / sizeof(char *)); i++) {
+    ssml_entity_lengths[i] = 0;
+    ssml_entities[i] = NULL;
+  }
+  ssml_entities['<'] = ssml_less_than;
+  ssml_entity_lengths['<'] = strlen(ssml_less_than);
+  ssml_entities['>'] = ssml_greater_than;
+  ssml_entity_lengths['>'] = strlen(ssml_greater_than);
+  ssml_entities['&'] = ssml_ampersand;
+  ssml_entity_lengths['&'] = strlen(ssml_ampersand);
+  ssml_entities['\''] = ssml_single_quote;
+  ssml_entity_lengths['\''] = strlen(ssml_single_quote);
+  ssml_entities['\"'] = ssml_double_quote;
+  ssml_entity_lengths['\"'] = strlen(ssml_double_quote);
+}
+
+/* ssml_escape_text: escape characters that are special to SSML. */
+char *
+ssml_escape_text(char *text)
+{
+  int old_text_length = strlen(text);
+  int escaped_text_length = 0;
+  int escape_pos = 0;
+  int i;
+  char *escaped_text = NULL;
+
+  /*
+    Make two passes over the text.  The first pass determines how much memory
+    to allocate.  The second pass copies text into a newly-allocated buffer,
+    escaping special characters as necessary.  After the second pass finishes,
+    terminate the buffer with a NUL character, and return it to the caller.
+  */
+
+  for(i = 0; i < old_text_length; i++) {
+    int current_char = text[i];
+    if ((current_char >= 0) && (current_char <= 127) &&
+       (ssml_entity_lengths[current_char] != 0))
+      escaped_text_length += ssml_entity_lengths[current_char];
+    else
+      escaped_text_length += 1;
+  }
+  escaped_text = malloc(escaped_text_length + 1);
+  if (escaped_text != NULL) {
+    for(i = 0; i < old_text_length; i++) {
+      int current_char = text[i];
+      if ((current_char >= 0) && (current_char <= 127) &&
+	 (ssml_entity_lengths[current_char] != 0)) {
+	strcpy(&(escaped_text[escape_pos]), ssml_entities[current_char]);
+	escape_pos += ssml_entity_lengths[current_char];
+      }
+      else
+	escaped_text[escape_pos++] = current_char;
+    }
+    escaped_text[escape_pos] = '\0';
+  }
+
+  return escaped_text;
+}
+
 char*
 recode_text(char *text)
 {
@@ -297,6 +375,11 @@ recode_text(char *text)
   char *utf8_text, *out_p;
 
   utf8_text = malloc(4*strlen(text)+1);
+  if (utf8_text == NULL) {
+    LOG(1,"ERROR: Charset conversion failed, reason: %s", strerror(errno));
+    return NULL;
+  }
+
   out_p = utf8_text;
   out_bytes = 4*strlen(text);
   in_bytes=strlen(text);
@@ -323,10 +406,48 @@ recode_text(char *text)
   return utf8_text;
 }
 
+/*
+  speak_string: send a string containing more than one printable character 
+  to Speech Dispatcher.  */
+
+int
+speak_string(char *text)
+{
+  char *utf8_text = NULL;
+  char *escaped_utf8_text = NULL;
+  char *ssml_text = NULL;
+  int ret = 0;
+  utf8_text = recode_text(text);
+  if (utf8_text == NULL)
+    ret =  -1;
+  else {
+    char *escaped_utf8_text = ssml_escape_text(utf8_text);
+
+    if(escaped_utf8_text == NULL) {
+      LOG(1, "No memory available to hold current string.");
+      ret = -1;
+    }
+    else {
+      int bufsize = strlen(escaped_utf8_text) + 16;
+      ssml_text = malloc(bufsize);
+      if(ssml_text == NULL)
+	ret = -1;
+      else {
+	snprintf(ssml_text, bufsize, "<speak>%s</speak>", escaped_utf8_text);
+	LOG(5, "Sending to speechd as text: |%s|", ssml_text);
+	ret = spd_say(conn, SPD_MESSAGE, ssml_text);
+      }
+    }
+  }
+  xfree(utf8_text);
+  xfree(escaped_utf8_text);
+  xfree(ssml_text);
+  return ret;
+}
+
 int
 speak(char *text)
 {
-  char *ssml_text = NULL;
   /* Check whether text contains more than one
      printable character. If so, use spd_say,
      otherwise use say_single_character.
@@ -357,23 +478,12 @@ speak(char *text)
     LOG(5, "Sending to speechd as character: |%s|", utf8_text);
     spd_ret = say_single_character(utf8_text);
   }else{
-    utf8_text = recode_text(text);
-    if (utf8_text == NULL)
-      ret =  -1;
-    else {
-      ssml_text = malloc(strlen(utf8_text)+16);
-      snprintf(ssml_text, strlen(text)+16, "<speak>%s</speak>", utf8_text);
-      LOG(5, "Sending to speechd as text: |%s|", ssml_text);
-      spd_ret = spd_say(conn, SPD_MESSAGE, ssml_text);
-    }
+    spd_ret = speak_string(text);
   }
-
-  xfree(utf8_text);
-  xfree(ssml_text);
 
   if (spd_ret != 0)
     ret =  -2;
-
+  xfree(utf8_text);
   return ret;
 }
 
