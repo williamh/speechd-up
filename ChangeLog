@@ -1,3 +1,11 @@
+2008-10-29  Hynek Hanke  <hanke@mach>
+
+	* speechd-up.c (init_ssml_char_escapes): New function.
+	(ssml_escape_text): New function.
+	(speak_string): Code from speak() separated into a new function.
+	(speak): Call speak_string().
+	General refactoring, thanks to Chris Brannon.
+
 2008-05-05  Hynek Hanke  <hanke@brailcom.org>
 
 	* configuration.c: SpeakupChartab and SpeakupCharacters new options.
