@@ -23,6 +23,12 @@
 # $Id: build.sh,v 1.1 2004-01-22 21:30:03 hanke Exp $
 
 
+echo "Copying libtool macros (libtoolize)"
+if ! libtoolize --force; then
+	echo "libtoolize failed!"
+	exit 1
+fi
+
 echo "Building user-defined autoconf macros (aclocal)"
 if ! aclocal; then
 	echo "aclocal failed!"
