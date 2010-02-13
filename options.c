@@ -84,9 +84,9 @@ options_set_default(void)
   options.config_file_name = strdup(SYS_CONF"/speechd-up.conf");
   options.speakup_device = strdup("/dev/softsynth");
   options.speakup_device_set = DEFAULT;
-  options.speakup_chartab = strdup("/sys/module/speakup/parameters/chartab");
+  options.speakup_chartab = strdup("/sys/accessibility/speakup/i18n/chartab");
   options.speakup_chartab_set = DEFAULT;
-  options.speakup_characters = strdup("/sys/module/speakup/parameters/characters");
+  options.speakup_characters = strdup("/sys/accessibility/speakup/i18n/characters");
   options.speakup_device_set = DEFAULT;
   options.speakup_coding = strdup("iso-8859-1");
   options.speakup_coding_set = DEFAULT;
