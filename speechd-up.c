@@ -421,7 +421,7 @@ speak_string(char *text)
   if (utf8_text == NULL)
     ret =  -1;
   else {
-    char *escaped_utf8_text = ssml_escape_text(utf8_text);
+    escaped_utf8_text = ssml_escape_text(utf8_text);
 
     if(escaped_utf8_text == NULL) {
       LOG(1, "No memory available to hold current string.");
