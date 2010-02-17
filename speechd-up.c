@@ -477,9 +477,10 @@ speak(char *text)
     utf8_text = recode_text(character);
     LOG(5, "Sending to speechd as character: |%s|", utf8_text);
     spd_ret = say_single_character(utf8_text);
-  }else{
+  }else if (printables > 1) {
     spd_ret = speak_string(text);
   }
+  /* Else printables is 0, nothing to do. */
 
   if (spd_ret != 0)
     ret =  -2;
