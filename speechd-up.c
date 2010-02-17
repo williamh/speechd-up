@@ -557,6 +557,7 @@ parse_buf(char *buf, size_t bytes)
             /* If there is some text before this command, say it */
             if (m > 0)
             {
+              *po = '\0';
               LOG(5, "text: |%s|", text);
               LOG(5, "[speaking (2)]");
               speak(text);
