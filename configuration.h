@@ -20,8 +20,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef CONFIGURATION_H
+#define CONFIGURATION_H
 
 void load_configuration(void);
 
