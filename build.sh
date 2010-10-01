@@ -19,8 +19,6 @@
 # along with this package; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
-#
-# $Id: build.sh,v 1.1 2004-01-22 21:30:03 hanke Exp $
 
 
 echo "Copying libtool macros (libtoolize)"

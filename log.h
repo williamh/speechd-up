@@ -17,8 +17,6 @@
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
- *
- * $Id: log.h,v 1.1 2006-12-13 18:01:05 hanke Exp $
  */
 
 #ifndef LOG_H

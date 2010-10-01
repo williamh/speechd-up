@@ -18,8 +18,6 @@
  * along with this package; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
- *
- * $Id: configuration.c,v 1.2 2008-05-05 09:15:33 hanke Exp $
  */
 
 #include <stdio.h>
