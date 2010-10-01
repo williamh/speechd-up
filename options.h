@@ -36,45 +36,45 @@
 #define CONFIG_FILE 2
 
 struct {
-    int log_level;
-    int log_level_set;
-    char *log_file_name;
-    int log_file_name_set;
-    int spd_spk_mode;
-    char *config_file_name;
-    char *speakup_device;
-    int speakup_device_set;
-    char *speakup_chartab;
-    int speakup_chartab_set;
-    char * speakup_characters;
-    int speakup_characters_set;
-    char *speakup_coding;
-    int speakup_coding_set;
-    char *language;
-    int language_set;
-    int probe_mode;
-    int dont_init_tables;
-    int dont_init_tables_set;
+	int log_level;
+	int log_level_set;
+	char *log_file_name;
+	int log_file_name_set;
+	int spd_spk_mode;
+	char *config_file_name;
+	char *speakup_device;
+	int speakup_device_set;
+	char *speakup_chartab;
+	int speakup_chartab_set;
+	char *speakup_characters;
+	int speakup_characters_set;
+	char *speakup_coding;
+	int speakup_coding_set;
+	char *language;
+	int language_set;
+	int probe_mode;
+	int dont_init_tables;
+	int dont_init_tables_set;
 } options;
 
 static struct option spd_long_options[] = {
-    {"run-daemon", 0, 0, 'd'},
-    {"run-single", 0, 0, 's'},
-    {"log-level", 1, 0, 'l'},
-    {"log-file", 1, 0, 'L'},
-    {"config-file", 1, 0, 'C'},
-    {"device", 1, 0, 'D'},
-    {"coding", 1, 0, 'c'},
-    {"language", 1, 0, 'i'},
-    {"synthesis", 1, 0, 'S'},
-    {"dont-init-tables", 0, 0, 't'},
-    {"probe", 0, 0, 'p'},
-    {"version", 0, 0, 'v'},
-    {"help", 0, 0, 0},
-    {0, 0, 0, 0}
+	{"run-daemon", 0, 0, 'd'},
+	{"run-single", 0, 0, 's'},
+	{"log-level", 1, 0, 'l'},
+	{"log-file", 1, 0, 'L'},
+	{"config-file", 1, 0, 'C'},
+	{"device", 1, 0, 'D'},
+	{"coding", 1, 0, 'c'},
+	{"language", 1, 0, 'i'},
+	{"synthesis", 1, 0, 'S'},
+	{"dont-init-tables", 0, 0, 't'},
+	{"probe", 0, 0, 'p'},
+	{"version", 0, 0, 'v'},
+	{"help", 0, 0, 0},
+	{0, 0, 0, 0}
 };
 
-static char* spd_short_options = "dsvhpti:l:L:C:D:S:c:";
+static char *spd_short_options = "dsvhpti:l:L:C:D:S:c:";
 
 void options_set_default(void);
 void options_print_version(void);

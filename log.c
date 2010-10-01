@@ -30,41 +30,41 @@
 #include "options.h"
 #include "log.h"
 
-void
-LOG(int level, char *format, ...)
+void LOG(int level, char *format, ...)
 {
-  assert(format != NULL);
-  assert(logfile != NULL);
+	assert(format != NULL);
+	assert(logfile != NULL);
 
-  if(level <= options.log_level) {
-    va_list args;
-    int i;
-		
-    va_start(args, format);
-    {
-	{
-	/* Print timestamp */
-	time_t t;
-	char *tstr;
-	t = time(NULL);
-	tstr = (char*) strdup((char*) ctime(&t));
-	if (tstr == NULL){
-	    fprintf(stderr, "strdup(ctime) failed, can't log");
-	    return;
+	if (level <= options.log_level) {
+		va_list args;
+		int i;
+
+		va_start(args, format);
+		{
+			{
+				/* Print timestamp */
+				time_t t;
+				char *tstr;
+				t = time(NULL);
+				tstr = (char *)strdup((char *)ctime(&t));
+				if (tstr == NULL) {
+					fprintf(stderr,
+						"strdup(ctime) failed, can't log");
+					return;
+				}
+				/* Remove the trailing \n */
+				assert(strlen(tstr) > 1);
+				tstr[strlen(tstr) - 1] = 0;
+				fprintf(logfile, "[%s] speechd: ", tstr);
+				free(tstr);
+			}
+			for (i = 1; i < level; i++) {
+				fprintf(logfile, " ");
+			}
+			vfprintf(logfile, format, args);
+			fprintf(logfile, "\n");
+			fflush(logfile);
+		}
+		va_end(args);
 	}
-	/* Remove the trailing \n */
-	assert(strlen(tstr)>1);
-	tstr[strlen(tstr)-1] = 0;
-	fprintf(logfile, "[%s] speechd: ", tstr);
-	free(tstr);
-      }
-      for(i=1;i<level;i++){
-	fprintf(logfile, " ");
-      }
-      vfprintf(logfile, format, args);
-      fprintf(logfile, "\n");
-      fflush(logfile);
-    }
-    va_end(args);
-  }				
 }
