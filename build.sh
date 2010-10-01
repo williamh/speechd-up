@@ -19,44 +19,4 @@
 # along with this package; see the file COPYING.  If not, write to
 # the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 # Boston, MA 02111-1307, USA.
-
-
-echo "Copying libtool macros (libtoolize)"
-if ! libtoolize --force; then
-	echo "libtoolize failed!"
-	exit 1
-fi
-
-echo "Building user-defined autoconf macros (aclocal)"
-if ! aclocal; then
-	echo "aclocal failed!"
-	exit 1
-fi
-
-echo "Creating ./configure (autoconf)"
-if ! autoconf; then
-	echo "autoconf failed!"
-	exit 1
-fi
-
-echo "Creating config.h.in (autoheader)"
-if ! autoheader; then
-	echo "autoheader failed!"
-	exit 1
-fi
-
-echo "Checking for missing scripts (automake -a)"
-if ! automake -a; then
-	echo "automake -a failed!"
-	exit 1
-fi
-
-echo "Creating makefiles.in (automake)"
-if ! automake; then
-	echo "automake failed!"
-	exit 1
-fi
-
-echo 
-echo "You can continue configuring and compiling speechd-up with"
-echo "       ./configure && make all && make install"
+autoreconf -i
