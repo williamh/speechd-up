@@ -4,8 +4,7 @@ bin_PROGRAMS = speechd-up
 speechd_up_CFLAGS = -Wall
 speechd_up_CPPFLAGS = -DLOGPATH=\"$(logpath)\" \
 	-DPIDPATH=\"$(pidpath)\" \
-	-DSYS_CONF=\"$(sysconfdir)\" \
-	-DVERSION=\"$(VERSION)\"
+	-DSYS_CONF=\"$(sysconfdir)\"
 speechd_up_LDADD = $(DOTCONF_LIBS)
 speechd_up_SOURCES = speechd-up.c\
 	options.c \
