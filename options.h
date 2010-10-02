@@ -19,12 +19,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <getopt.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
-#define PACKAGE "speechd-up"
+#ifndef OPTIONS_H
+#define OPTIONS_H
 
 #define MODE_DAEMON 1
 #define MODE_SINGLE 0
@@ -33,7 +29,7 @@
 #define COMMAND_LINE 1
 #define CONFIG_FILE 2
 
-struct {
+struct spd_options {
 	int log_level;
 	int log_level_set;
 	char *log_file_name;
@@ -53,27 +49,9 @@ struct {
 	int probe_mode;
 	int dont_init_tables;
 	int dont_init_tables_set;
-} options;
-
-static struct option spd_long_options[] = {
-	{"run-daemon", 0, 0, 'd'},
-	{"run-single", 0, 0, 's'},
-	{"log-level", 1, 0, 'l'},
-	{"log-file", 1, 0, 'L'},
-	{"config-file", 1, 0, 'C'},
-	{"device", 1, 0, 'D'},
-	{"coding", 1, 0, 'c'},
-	{"language", 1, 0, 'i'},
-	{"synthesis", 1, 0, 'S'},
-	{"dont-init-tables", 0, 0, 't'},
-	{"probe", 0, 0, 'p'},
-	{"version", 0, 0, 'v'},
-	{"help", 0, 0, 0},
-	{0, 0, 0, 0}
 };
 
-static char *spd_short_options = "dsvhpti:l:L:C:D:S:c:";
-
 void options_set_default(void);
-void options_print_version(void);
 void options_parse(int argc, char *argv[]);
+
+#endif

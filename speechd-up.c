@@ -52,6 +52,8 @@
 #define DTLK_STOP 24
 #define DTLK_CMD 1
 
+extern struct spd_options options;
+
 int fd;
 fd_set fd_list;
 fd_set fd_write;

@@ -24,7 +24,33 @@
 #endif
 
 #include <assert.h>
+#include <getopt.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 #include "options.h"
+
+static struct option spd_long_options[] = {
+	{"run-daemon", 0, 0, 'd'},
+	{"run-single", 0, 0, 's'},
+	{"log-level", 1, 0, 'l'},
+	{"log-file", 1, 0, 'L'},
+	{"config-file", 1, 0, 'C'},
+	{"device", 1, 0, 'D'},
+	{"coding", 1, 0, 'c'},
+	{"language", 1, 0, 'i'},
+	{"synthesis", 1, 0, 'S'},
+	{"dont-init-tables", 0, 0, 't'},
+	{"probe", 0, 0, 'p'},
+	{"version", 0, 0, 'v'},
+	{"help", 0, 0, 0},
+	{0, 0, 0, 0}
+};
+
+static char *spd_short_options = "dsvhpti:l:L:C:D:S:c:";
+
+struct spd_options options;
 
 #define SPD_OPTION_SET_INT(param) \
     val = strtol(optarg, &tail_ptr, 10); \

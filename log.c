@@ -32,6 +32,8 @@
 #include "options.h"
 #include "log.h"
 
+extern struct spd_options options;
+
 void LOG(int level, char *format, ...)
 {
 	assert(format != NULL);

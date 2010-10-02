@@ -34,6 +34,8 @@
 #include "configuration.h"
 #include "options.h"
 
+extern struct spd_options options;
+
 /* == CONFIGURATION MANAGEMENT FUNCTIONS */
 
 /* Add dotconf configuration option */
