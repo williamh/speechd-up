@@ -24,10 +24,11 @@
 #include <config.h>
 #endif
 
+#include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <dotconf.h>
-#include <assert.h>
 
 #include "log.h"
 #include "configuration.h"
@@ -143,4 +144,27 @@ configoption_t *load_config_options(int *num_options)
 
 	return options;
 
+}
+
+void load_configuration(void)
+{
+	configfile_t *configfile = NULL;
+	int dc_num_options = 0;
+	configoption_t *dc_options = NULL;
+
+	/* Load new configuration */
+	dc_options = load_config_options(&dc_num_options);
+
+	configfile = dotconf_create(options.config_file_name, dc_options,
+								0, CASE_INSENSITIVE);
+	if (!configfile) {
+		LOG(0, "Error opening config file\n");
+		return;
+	}
+	if (dotconf_command_loop(configfile) == 0)
+		FATAL(-1, "Error reading config file\n");
+	dotconf_cleanup(configfile);
+	free_config_options(dc_options, &dc_num_options);
+	LOG(1, "Configuration has been read from \"%s\"",
+		options.config_file_name);
 }

@@ -42,7 +42,6 @@
 
 #include <iconv.h>
 #include <libspeechd.h>
-#include <dotconf.h>
 
 #include "log.h"
 #include "options.h"
@@ -666,30 +665,6 @@ int create_pid_file()
 void destroy_pid_file()
 {
 	unlink(spd_spk_pid_file);
-}
-
-void load_configuration(void)
-{
-	configfile_t *configfile = NULL;
-	int dc_num_options = 0;
-	configoption_t *dc_options = NULL;
-
-	/* Load new configuration */
-	dc_options = load_config_options(&dc_num_options);
-
-	configfile = dotconf_create(options.config_file_name, dc_options,
-				    0, CASE_INSENSITIVE);
-	if (!configfile) {
-		LOG(0, "Error opening config file\n");
-		return;
-	}
-	if (dotconf_command_loop(configfile) == 0)
-		FATAL(-1, "Error reading config file\n");
-	dotconf_cleanup(configfile);
-
-	free_config_options(dc_options, &dc_num_options);
-	LOG(1, "Configuration has been read from \"%s\"",
-	    options.config_file_name);
 }
 
 int main(int argc, char *argv[])
