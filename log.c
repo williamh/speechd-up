@@ -28,7 +28,7 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <time.h>
-#include "configuration.h"
+
 #include "options.h"
 #include "log.h"
 
