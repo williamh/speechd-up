@@ -77,9 +77,9 @@ index_marker_callback(size_t msg_id, size_t client_id, SPDNotificationType type,
 		      char *index_mark)
 {
 	//LOG(5,"Index Mark Callback");
-	if (index_mark != NULL) {
-		write(fd, index_mark, sizeof(index_mark));
-	}
+	if (index_mark != NULL)
+		if (	write(fd, index_mark, sizeof(index_mark)) < 0)
+			LOG(1, "Unable to write index mark: %s\n", strerror(errno));
 }
 
 void speechd_init()
@@ -504,6 +504,7 @@ int parse_buf(char *buf, size_t bytes)
 
 	assert(bytes <= BUF_SIZE);
 
+	param = 0;
 	pi = buf;
 	po = text;
 	m = 0;
@@ -700,7 +701,8 @@ int main(int argc, char *argv[])
 
 	/* Fork, set uid, chdir, etc. */
 	if (options.spd_spk_mode == MODE_DAEMON) {
-		daemon(0, 0);
+		if (daemon(0, 0))
+			return 1;
 		/* Re-create the pid file under this process */
 		destroy_pid_file();
 		if (create_pid_file() == -1)
