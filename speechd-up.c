@@ -129,7 +129,7 @@ int init_speakup_tables()
 			fprintf(fp_char, "%d\tALPHA\n", i);
 		}
 		for (i = 'A'; i <= 'Z'; i++) {
-			fprintf(fp_char, "%d\tALPHA\n", i);
+			fprintf(fp_char, "%d\tA_CAP\n", i);
 		}
 		for (i = 128; i < 256; i++) {
 			fprintf(fp_char, "%d\tALPHA\n", i);
