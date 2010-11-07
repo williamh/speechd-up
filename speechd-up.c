@@ -629,7 +629,7 @@ void destroy_pid_file()
 int main(int argc, char *argv[])
 {
 	size_t chars_read;
-	char buf[BUF_SIZE];
+	char buf[BUF_SIZE + 1];
 	int ret;
 
 	options_set_default();
