@@ -162,7 +162,6 @@ void process_command(char command, unsigned int param, int pm)
 		case 0:
 			LOG(5, "[punctuation all]");
 			ret = spd_set_punctuation(conn, SPD_PUNCT_ALL);
-			ret = spd_set_capital_letters(conn, SPD_CAP_SPELL);
 			break;
 		case 1:
 		case 2:
