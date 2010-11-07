@@ -90,8 +90,14 @@ void speechd_init()
 	conn->callback_im = index_marker_callback;
 	if (spd_set_notification_on(conn, SPD_INDEX_MARKS) == -1)
 		LOG(1, "Error turning on Index Mark Callback");
+
 	if (options.language_set != DEFAULT)
-		spd_set_language(conn, options.language);
+		if (spd_set_language(conn, options.language) == -1)
+			LOG(1, "Error setting language");
+
+	if (spd_set_capital_letters(conn, SPD_CAP_NONE) == -1)
+		LOG(1, "Unable to set capital letter recognition");
+
 	init_ssml_char_escapes();
 }
 
