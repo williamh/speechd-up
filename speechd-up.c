@@ -424,11 +424,11 @@ int speak(char *text)
 
 	LOG(5, "Text before recoding: |%s|", text);
 
-	if (printables == 1) {
+	if (printables == 1 && !isupper(*character)) {
 		utf8_text = recode_text(character);
 		LOG(5, "Sending to speechd as character: |%s|", utf8_text);
 		spd_ret = say_single_character(utf8_text);
-	} else if (printables > 1) {
+	} else if (printables >= 1) {
 		spd_ret = speak_string(text);
 	}
 	/* Else printables is 0, nothing to do. */
