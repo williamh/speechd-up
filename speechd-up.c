@@ -330,49 +330,6 @@ void init_ssml_char_escapes(void)
 	ssml_entity_lengths['\"'] = strlen(ssml_double_quote);
 }
 
-/* ssml_escape_text: escape characters that are special to SSML. */
-char *ssml_escape_text(char *text)
-{
-	int old_text_length = strlen(text);
-	int escaped_text_length = 0;
-	int escape_pos = 0;
-	int i;
-	char *escaped_text = NULL;
-
-	/*
-	   Make two passes over the text.  The first pass determines how much memory
-	   to allocate.  The second pass copies text into a newly-allocated buffer,
-	   escaping special characters as necessary.  After the second pass finishes,
-	   terminate the buffer with a NUL character, and return it to the caller.
-	 */
-
-	for (i = 0; i < old_text_length; i++) {
-		int current_char = text[i];
-		if ((current_char >= 0) && (current_char <= 127) &&
-		    (ssml_entity_lengths[current_char] != 0))
-			escaped_text_length +=
-			    ssml_entity_lengths[current_char];
-		else
-			escaped_text_length += 1;
-	}
-	escaped_text = malloc(escaped_text_length + 1);
-	if (escaped_text != NULL) {
-		for (i = 0; i < old_text_length; i++) {
-			int current_char = text[i];
-			if ((current_char >= 0) && (current_char <= 127) &&
-			    (ssml_entity_lengths[current_char] != 0)) {
-				strcpy(&(escaped_text[escape_pos]),
-				       ssml_entities[current_char]);
-				escape_pos += ssml_entity_lengths[current_char];
-			} else
-				escaped_text[escape_pos++] = current_char;
-		}
-		escaped_text[escape_pos] = '\0';
-	}
-
-	return escaped_text;
-}
-
 char *recode_text(char *text)
 {
 	iconv_t cd;
@@ -418,35 +375,24 @@ char *recode_text(char *text)
 int speak_string(char *text)
 {
 	char *utf8_text = NULL;
-	char *escaped_utf8_text = NULL;
 	char *ssml_text = NULL;
 	int ret = 0;
 	utf8_text = recode_text(text);
 	if (utf8_text == NULL)
 		ret = -1;
 	else {
-		escaped_utf8_text = ssml_escape_text(utf8_text);
-
-		if (escaped_utf8_text == NULL) {
-			LOG(1, "No memory available to hold current string.");
+		int bufsize = strlen(utf8_text) + 16;
+		ssml_text = malloc(bufsize);
+		if (ssml_text == NULL)
 			ret = -1;
-		} else {
-			int bufsize = strlen(escaped_utf8_text) + 16;
-			ssml_text = malloc(bufsize);
-			if (ssml_text == NULL)
-				ret = -1;
-			else {
-				snprintf(ssml_text, bufsize,
-					 "<speak>%s</speak>",
-					 escaped_utf8_text);
-				LOG(5, "Sending to speechd as text: |%s|",
-				    ssml_text);
-				ret = spd_say(conn, SPD_MESSAGE, ssml_text);
-			}
+		else {
+			snprintf(ssml_text, bufsize,
+				 "<speak>%s</speak>", utf8_text);
+			LOG(5, "Sending to speechd as text: |%s|", ssml_text);
+			ret = spd_say(conn, SPD_MESSAGE, ssml_text);
 		}
 	}
 	xfree(utf8_text);
-	xfree(escaped_utf8_text);
 	xfree(ssml_text);
 	return ret;
 }
@@ -498,14 +444,14 @@ int parse_buf(char *buf, size_t bytes)
 	char helper[20];
 	char cmd_type = ' ';
 	int n, m;
+	int current_char;
 	unsigned int param;
 	int pm;
 
 	int i;
 	//char *mark_tag="<mark name=\"%s\">";
 	char *pi, *po;
-
-	char text[BUF_SIZE];
+	static char text[BUF_SIZE * 16];	/* Definitely big enough. */
 
 	assert(bytes <= BUF_SIZE);
 
@@ -513,8 +459,6 @@ int parse_buf(char *buf, size_t bytes)
 	pi = buf;
 	po = text;
 	m = 0;
-
-	po = text;
 
 	for (i = 0; i < bytes; i++) {
 		/* Stop speaking */
@@ -575,9 +519,15 @@ int parse_buf(char *buf, size_t bytes)
 			/* This is ordinary text, so put the byte into our text
 			   buffer for later synthesis. */
 			m++;
-			*po = *pi;
+			current_char = *pi;
+			if (isascii(current_char) && (ssml_entities[current_char] != NULL)) {
+				strcpy(po, ssml_entities[current_char]);
+				po += ssml_entity_lengths[current_char];
+			} else {
+				*po = *pi;
+				po += sizeof(char);
+			}
 			pi += sizeof(char);
-			po += sizeof(char);
 		}
 	}
 	*po = 0;
