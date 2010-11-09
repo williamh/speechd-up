@@ -53,14 +53,14 @@ static DOTCONF_CB(cb_speakupDevice);
  * Initialize the array of configuration options.
  */
 static const configoption_t configOptions[] = {
-	{"DontInitTables", ARG_TOGGLE, cb_dontInitTables, NULL, CTX_ALL, },
-	{"Language", ARG_STR, cb_language, NULL, CTX_ALL, },
-	{"LogFile", ARG_STR, cb_logFile, NULL, CTX_ALL, },
-	{"LogLevel", ARG_INT, cb_logLevel, NULL, CTX_ALL, },
-	{"SpeakupCharacters", ARG_STR, cb_speakupCharacters, NULL, CTX_ALL, },
-	{"SpeakupChartab", ARG_STR, cb_speakupChartab, NULL, CTX_ALL, },
-	{"SpeakupCoding", ARG_STR, cb_speakupCoding, NULL, CTX_ALL, },
-	{"SpeakupDevice", ARG_STR, cb_speakupDevice, NULL, CTX_ALL, },
+	{"DontInitTables", ARG_TOGGLE, cb_dontInitTables, NULL, CTX_ALL,},
+	{"Language", ARG_STR, cb_language, NULL, CTX_ALL,},
+	{"LogFile", ARG_STR, cb_logFile, NULL, CTX_ALL,},
+	{"LogLevel", ARG_INT, cb_logLevel, NULL, CTX_ALL,},
+	{"SpeakupCharacters", ARG_STR, cb_speakupCharacters, NULL, CTX_ALL,},
+	{"SpeakupChartab", ARG_STR, cb_speakupChartab, NULL, CTX_ALL,},
+	{"SpeakupCoding", ARG_STR, cb_speakupCoding, NULL, CTX_ALL,},
+	{"SpeakupDevice", ARG_STR, cb_speakupDevice, NULL, CTX_ALL,},
 	LAST_OPTION
 };
 
@@ -106,10 +106,10 @@ static DOTCONF_CB(cb_logFile)
 	}
 	return NULL;
 }
- 
+
 static DOTCONF_CB(cb_logLevel)
 {
-	if ((cmd->data.value < 1 ) || (cmd->data.value > 5))
+	if ((cmd->data.value < 1) || (cmd->data.value > 5))
 		FATAL(-1, "Log level must be between 1 and 5");
 	if (options.log_level_set != COMMAND_LINE) {
 		LOG(3, "setting %s to %i\n", cmd->name, cmd->data.value);
@@ -177,7 +177,7 @@ void load_configuration(void)
 	configfile_t *configfile;
 
 	configfile = dotconf_create(options.config_file_name, configOptions,
-		NULL, CASE_INSENSITIVE);
+				    NULL, CASE_INSENSITIVE);
 	if (!configfile) {
 		LOG(0, "Error opening config file\n");
 		exit(1);
@@ -186,5 +186,6 @@ void load_configuration(void)
 	if (dotconf_command_loop(configfile) == 0)
 		FATAL(-1, "Error reading config file\n");
 	dotconf_cleanup(configfile);
-	LOG(1, "Configuration has been read from \"%s\"", options.config_file_name);
+	LOG(1, "Configuration has been read from \"%s\"",
+	    options.config_file_name);
 }

@@ -78,8 +78,9 @@ index_marker_callback(size_t msg_id, size_t client_id, SPDNotificationType type,
 {
 	//LOG(5,"Index Mark Callback");
 	if (index_mark != NULL)
-		if (	write(fd, index_mark, sizeof(index_mark)) < 0)
-			LOG(1, "Unable to write index mark: %s\n", strerror(errno));
+		if (write(fd, index_mark, sizeof(index_mark)) < 0)
+			LOG(1, "Unable to write index mark: %s\n",
+			    strerror(errno));
 }
 
 void speechd_init()
@@ -520,7 +521,8 @@ int parse_buf(char *buf, size_t bytes)
 			   buffer for later synthesis. */
 			m++;
 			current_char = *pi;
-			if (isascii(current_char) && (ssml_entities[current_char] != NULL)) {
+			if (isascii(current_char)
+			    && (ssml_entities[current_char] != NULL)) {
 				strcpy(po, ssml_entities[current_char]);
 				po += ssml_entity_lengths[current_char];
 			} else {
