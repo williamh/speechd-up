@@ -85,7 +85,7 @@ void options_print_help(char *argv[])
 	       "under the terms of the GNU General Public License as published by\n"
 	       "the Free Software Foundation; either version 2, or (at your option)\n"
 	       "any later version. Please see COPYING for more details.\n\n"
-	       "Please report bugs to <speechd-up@bugs.freebsoft.org>\n\n");
+	       "Please report bugs to %s\n\n", PACKAGE_BUGREPORT);
 }
 
 void options_print_version(void)
