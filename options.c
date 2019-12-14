@@ -44,7 +44,7 @@ static struct option spd_long_options[] = {
 	{"dont-init-tables", 0, 0, 't'},
 	{"probe", 0, 0, 'p'},
 	{"version", 0, 0, 'v'},
-	{"help", 0, 0, 0},
+	{"help", 0, 0, 'h'},
 	{0, 0, 0, 0}
 };
 
@@ -68,18 +68,18 @@ void options_print_help(char *argv[])
 	     argv[0]);
 	printf
 	    ("SpeechD-Up -- Interface between Speech Dispatcher and SpeakUp (GNU GPL)\n\n");
-	printf("-d, --run-daemon     -      Run as a daemon\n"
-	       "-s, --run-single     -      Run as single application\n"
-	       "-l, --log-level      -      Set log level (1..5)\n"
-	       "-L, --log-file       -      Set log file to path\n"
-	       "-D, --device         -      Specify the device name of Speakup software synthesis\n"
-	       "-i, --language       -      Set default language for speech output\n"
-	       "-c, --coding         -      Specify the default encoding to use\n"
-	       "-t, --dont-init-tables -    Don't rewrite /proc tables for optimal software synthesis\n"
-	       "-p, --probe          -      Initialize everything and try to say some message\n"
-	       "                            but don't connect to SpeakUp. For testing purposes.\n"
-	       "-v, --version        -      Report version of this program\n"
-	       "-h, --help           -      Print this info\n\n"
+	printf("\t-d, --run-daemon       Run as a daemon\n"
+	       "\t-s, --run-single       Run as single application\n"
+	       "\t-l, --log-level        Set log level (1..5)\n"
+	       "\t-L, --log-file         Set log file to path\n"
+	       "\t-D, --device           Specify the device name of Speakup software synthesis\n"
+	       "\t-i, --language         Set default language for speech output\n"
+	       "\t-c, --coding           Specify the default encoding to use\n"
+	       "\t-t, --dont-init-tables Don't rewrite /proc tables for optimal software synthesis\n"
+	       "\t-p, --probe            Initialize everything and try to say some message\n"
+	       "\t                       but don't connect to SpeakUp. For testing purposes.\n"
+	       "\t-v, --version          Report version of this program\n"
+	       "\t-h, --help             Print this info\n\n"
 	       "Copyright (C) 2003,2005 Brailcom, o.p.s.\n"
 	       "This is free software; you can redistribute it and/or modify it\n"
 	       "under the terms of the GNU General Public License as published by\n"
