@@ -19,4 +19,9 @@ dist_sysconf_DATA = speechd-up.conf
 info_TEXINFOS = speechd-up.texi
 speechd_up_TEXINFOS = gpl.texi fdl.texi
 
+speechd-up.1: speechd-up
+	help2man -n "Interface between Speech Dispatcher and SpeakUp" --output=$@ ./$<
+
+man1_MANS = speechd-up.1
+
 EXTRA_DIST = build.sh
