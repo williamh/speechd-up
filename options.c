@@ -44,7 +44,7 @@ static struct option spd_long_options[] = {
 	{"dont-init-tables", 0, 0, 't'},
 	{"probe", 0, 0, 'p'},
 	{"version", 0, 0, 'v'},
-	{"help", 0, 0, 0},
+	{"help", 0, 0, 'h'},
 	{0, 0, 0, 0}
 };
 
