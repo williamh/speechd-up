@@ -22,7 +22,7 @@
 #ifndef LOG_H
 #define LOG_H
 
-FILE *logfile;
+extern FILE *logfile;
 
 void LOG(int level, char *format, ...);
 #define FATAL(status, format...) { LOG(0, format); exit(status); }
