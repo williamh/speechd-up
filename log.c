@@ -33,6 +33,8 @@
 #include "options.h"
 #include "log.h"
 
+FILE *logfile;
+
 extern struct spd_options options;
 
 void LOG(int level, char *format, ...)
