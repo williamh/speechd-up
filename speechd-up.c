@@ -631,6 +631,7 @@ void destroy_pid_file()
 int main(int argc, char *argv[])
 {
 	size_t chars_read;
+	ssize_t chars_read_signed;
 	char buf[BUF_SIZE + 1];
 	int ret;
 
@@ -748,11 +749,19 @@ int main(int argc, char *argv[])
 			close(fd);
 			return -1;
 		}
-		chars_read = read(fd, buf, BUF_SIZE);
-		if (chars_read < 0) {
-			FATAL(5, "read() failed");
-			close(fd);
-			return -1;
+		chars_read_signed = read(fd, buf, BUF_SIZE);
+		if (chars_read_signed < 0) {
+			if (errno == EAGAIN) {
+				LOG(5, "read() failed with EAGAIN, retrying");
+				continue;
+			} else {
+				FATAL(5, "read() failed with %d,%s",
+				      errno, strerror(errno));
+				close(fd);
+				return -1;
+			}
+		} else {
+			chars_read = chars_read_signed;
 		}
 		buf[chars_read] = 0;
 		LOG(5, "Main loop characters read = %d : (%s)", chars_read,
