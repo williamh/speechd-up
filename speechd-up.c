@@ -161,17 +161,22 @@ void process_command(char command, unsigned int param, int pm)
 	case 'b':		/* set punctuation level */
 		switch (param) {
 		case 0:
-			LOG(5, "[punctuation all]");
-			ret = spd_set_punctuation(conn, SPD_PUNCT_ALL);
+			LOG(5, "[punctuation none]");
+			ret = spd_set_punctuation(conn, SPD_PUNCT_NONE);
 			break;
-		case 1:
 		case 2:
+			LOG(5, "[punctuation most]");
+#ifdef SPD_PUNCT_MOST
+			ret = spd_set_punctuation(conn, SPD_PUNCT_MOST);
+			break;
+#endif
+		case 1:
 			LOG(5, "[punctuation some]");
 			ret = spd_set_punctuation(conn, SPD_PUNCT_SOME);
 			break;
 		case 3:
-			LOG(5, "[punctuation none]");
-			ret = spd_set_punctuation(conn, SPD_PUNCT_NONE);
+			LOG(5, "[punctuation all]");
+			ret = spd_set_punctuation(conn, SPD_PUNCT_ALL);
 			break;
 		default:
 			LOG(1, "ERROR: Invalid punctuation mode!");
